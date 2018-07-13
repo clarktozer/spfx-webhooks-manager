@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-webhooks-manager-client-side-solution",
+    "id": "acd9667f-0d07-4739-8dbf-1959dcd5bcb3",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-webhooks-manager.sppkg"
+  }
+}

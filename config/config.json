@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "sp-web-hooks-manager-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/spWebHooksManager/SpWebHooksManagerWebPart.js",
+          "manifest": "./src/webparts/spWebHooksManager/SpWebHooksManagerWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "SpWebHooksManagerWebPartStrings": "lib/webparts/spWebHooksManager/loc/{locale}.js"
+  }
+}
