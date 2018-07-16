@@ -1,4 +1,4 @@
-import { DisplayMode } from "../../../../node_modules/@microsoft/sp-core-library";
+import { DisplayMode } from "@microsoft/sp-core-library";
 
 export interface ISpWebHooksManagerProps {
   showAdminButtons: boolean;

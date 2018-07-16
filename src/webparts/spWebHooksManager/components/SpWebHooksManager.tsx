@@ -2,11 +2,13 @@ import * as React from 'react';
 import styles from './SpWebHooksManager.module.scss';
 import { ISpWebHooksManagerProps } from './ISpWebHooksManagerProps';
 import { sp } from '@pnp/sp';
-import { IODataList,  } from '@microsoft/sp-odata-types';
+import { IODataList, } from '@microsoft/sp-odata-types';
 import { autobind } from '@uifabric/utilities/lib';
 import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
+import { Subscription } from '@pnp/sp/src/subscriptions';
+import SubscriptionsList from './SubscriptionsList';
 
-export interface Subscription {
+export interface ISubscription {
   clientState: string;
   expirationDateTime: string;
   id: string;
@@ -14,14 +16,13 @@ export interface Subscription {
   resource: string;
 }
 
-export interface ListSubscription {
-  key: string;
+export interface IListSubscription {
   list: IODataList;
-  subscriptions: Subscription[];
+  subscriptions: ISubscription[];
 }
 
 export interface ISpWebHooksManagerState {
-  listSubscriptions: ListSubscription[];
+  listSubscriptions: IListSubscription[];
 }
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
@@ -58,11 +59,46 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
     let map = this.props.listTemplateTypes.map((e) => {
       return `BaseTemplate eq ${SP.ListTemplateType[e]}`;
     });
-    return map.join(" or ");
+    return this.getGenericFilter() + " and (" + map.join(" or ") + ")";
   }
 
   @autobind
-  private async getSubscriptions(): Promise<ListSubscription[]> {
+  private getGenericFilter(): string {
+    return "(IsPrivate eq false and Hidden eq false)";
+  }
+
+  @autobind
+  private async onDeleteWebHook(listId: string, subscriptionId: string) {
+    try {
+      console.log("onDeleteWebHook", listId, subscriptionId);
+      //await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).delete();
+    } catch (e) {
+      // some error
+    }
+  }
+
+  @autobind
+  private async onAddWebHook(listId: string, notificationUrl: string, expirationDate: string, clientState?: string) {
+    try {
+      console.log("onAddWebHook", listId);
+      //let added = await sp.web.lists.getById(listId).subscriptions.add(notificationUrl, expirationDate, clientState);
+    } catch (e) {
+
+    }
+  }
+
+  @autobind
+  private async onUpdateWebHook(listId: string, subscriptionId: string, expirationDate: string) {
+    try {
+      console.log("onUpdateWebHook", listId, subscriptionId);
+      //let updated = await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).update(expirationDate);
+    } catch (e) {
+
+    }
+  }
+
+  @autobind
+  private async getSubscriptions(): Promise<IListSubscription[]> {
     var lists: IODataList[] = await sp.web.lists.filter(this.generateFilter()).get();
     var promises = [];
     let batches = [];
@@ -72,7 +108,6 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       let list = lists[i];
       promises.push(sp.web.lists.getById(list.Id).subscriptions.inBatch(batch).get().then((subscriptions: Subscription[]) => {
         return {
-          key: list.Id,
           list: list,
           subscriptions: subscriptions
         };
@@ -97,14 +132,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
               updateProperty={this.props.updateProperty} />
             {
               this.state.listSubscriptions.map((e) => {
-                return <div key={e.key}>
-                  <h3>{e.list.Title} ({e.subscriptions.length})</h3>
-                  {
-                    e.subscriptions.map((s)=>{
-                      return <div>{s.id}</div>
-                    })
-                  }
-                </div>;
+                return <SubscriptionsList
+                  listSubscription={e}
+                  onAddSubscription={this.onAddWebHook}
+                  onDeleteSubscription={this.onDeleteWebHook}
+                  onUpdateSubscription={this.onUpdateWebHook}
+                />;
               })
             }
           </div>

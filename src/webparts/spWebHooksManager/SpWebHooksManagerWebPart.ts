@@ -17,6 +17,7 @@ require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
+
 export interface ISpWebHooksManagerWebPartProps {
   showAdminButtons: boolean;
   listTemplateTypes: string[];
