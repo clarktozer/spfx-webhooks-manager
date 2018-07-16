@@ -1,7 +1,6 @@
 define([], function() {
   return {
-    "PropertyPaneDescription": "Description",
-    "BasicGroupName": "Group Name",
-    "DescriptionFieldLabel": "Description Field"
+    "PropertyPaneDescription": "Manage web hook subscriptions on the lists in this site",
+    "BasicGroupName": "Basic Settings"
   }
 });

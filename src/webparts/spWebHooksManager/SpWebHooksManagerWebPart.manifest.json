@@ -20,7 +20,9 @@
     "description": { "default": "SharePoint framework webpart for managing webhooks for a site" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "SPWebHooksManager"
+      "title": "Web Hooks Manager",
+      "showAdminButtons": true,
+      "listTemplateTypes": ["genericList"]
     }
   }]
 }

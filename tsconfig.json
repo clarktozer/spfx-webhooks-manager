@@ -9,13 +9,18 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@microsoft"
     ],
     "types": [
       "es6-promise",
-      "webpack-env"
+      "webpack-env",
+      "microsoft-ajax",
+      "sharepoint",
+      "lodash.startcase"
     ],
     "lib": [
       "es5",
