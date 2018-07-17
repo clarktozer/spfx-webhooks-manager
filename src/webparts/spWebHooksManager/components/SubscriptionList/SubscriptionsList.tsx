@@ -1,25 +1,19 @@
 import * as React from 'react';
-import { IListSubscription } from './SpWebHooksManager';
 import { autobind } from '@uifabric/utilities/lib';
-import SubscriptionListItem from './SubscriptionListItem';
-
-export interface ISubscriptionListProps {
-  listSubscription: IListSubscription;
-  onDeleteSubscription: (listId: string, subscriptionId: string) => void;
-  onAddSubscription: (listId: string, notificationUrl: string, expirationDate: string, clientState?: string) => void;
-  onUpdateSubscription: (listId: string, subscriptionId: string, expirationDate: string) => void;
-}
-
-export interface ISubscriptionListState {
-  onExpanded: boolean;
-}
+import { ISubscriptionListProps } from './ISubscriptionListProps';
+import { ISubscriptionListState } from './ISubscriptionListState';
+import { IAddSubscription } from '../AddSubscriptionPanel/IAddSubscription';
+import { ConfirmDeleteDialog } from '../ConfirmDeleteDialog/ConfirmDeleteDialog';
+import SubscriptionListItem from '../SubscriptionListItem/SubscriptionListItem';
+import AddSubscriptionPanel from '../AddSubscriptionPanel/AddSubscriptionPanel';
 
 export default class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscriptionListState> {
   constructor(props: ISubscriptionListProps) {
     super(props);
 
     this.state = {
-      onExpanded: false
+      onExpanded: false,
+      showAddPanel: false
     };
   }
 
@@ -31,13 +25,37 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
   }
 
   @autobind
-  private onAdd() {
-    this.props.onAddSubscription(this.props.listSubscription.list.Id, "", "");
+  private onEnablePanel() {
+    this.setState({
+      showAddPanel: true
+    });
+  }
+
+  @autobind
+  private onClosePanel() {
+    this.setState({
+      showAddPanel: false
+    });
+  }
+
+  @autobind
+  private onAdd(subscription: IAddSubscription) {
+    this.props.onAddSubscription(this.props.listSubscription.list.Id, subscription);
   }
 
   @autobind
   private onDelete(subscriptionId: string) {
     this.props.onDeleteSubscription(this.props.listSubscription.list.Id, subscriptionId);
+  }
+
+  @autobind
+  private onConfirmDelete(subscriptionId: string) {
+    let dialog = new ConfirmDeleteDialog({
+      onDeleteSubscription: () => {
+        this.onDelete(subscriptionId);
+      }
+    });
+    dialog.show();
   }
 
   @autobind
@@ -51,7 +69,7 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
       <div key={listSubscription.list.Id}>
         <h3>
           <i className={" ms-Icon ms-Icon--ChevronDown"} aria-hidden="true" onClick={this.onToggleExpand}></i>
-          <i className={" ms-Icon ms-Icon--Add"} aria-hidden="true" onClick={this.onAdd}></i>
+          <i className={" ms-Icon ms-Icon--Add"} aria-hidden="true" onClick={this.onEnablePanel}></i>
           {listSubscription.list.Title} ({listSubscription.subscriptions.length})
         </h3>
         {
@@ -61,12 +79,20 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
                 listSubscription.subscriptions.map((s) => {
                   return <SubscriptionListItem
                     subscription={s}
-                    onDeleteSubscription={this.onDelete}
+                    onDeleteSubscription={this.onConfirmDelete}
                     onUpdateSubscription={this.onUpdate}
                   />;
                 })
               }
             </div>
+            : null
+        }
+        {
+          this.state.showAddPanel ?
+            <AddSubscriptionPanel
+              enabled={this.state.showAddPanel}
+              onClosePanel={this.onClosePanel}
+              onAdd={this.onAdd} />
             : null
         }
       </div>

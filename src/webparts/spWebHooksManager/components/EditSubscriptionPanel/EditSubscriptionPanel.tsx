@@ -2,50 +2,12 @@ import * as React from 'react';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { Label } from 'office-ui-fabric-react/lib/Label';
-import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
+import { DatePicker, DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { ISubscription } from './SpWebHooksManager';
 import { autobind } from '@uifabric/utilities/lib';
-
-const DayPickerStrings: IDatePickerStrings = {
-  months: [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ],
-
-  shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-
-  days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-
-  shortDays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-
-  goToToday: 'Go to today',
-  prevMonthAriaLabel: 'Go to previous month',
-  nextMonthAriaLabel: 'Go to next month',
-  prevYearAriaLabel: 'Go to previous year',
-  nextYearAriaLabel: 'Go to next year'
-};
-
-export interface IEditSubscriptionProps {
-  subscription: ISubscription;
-  enabled: boolean;
-  onUpdate: (expirationDateTime: string) => void;
-  onClosePanel: () => void;
-}
-
-export interface IEditSubscriptionState {
-  expirationDateTime: Date;
-}
+import * as strings from 'SpWebHooksManagerWebPartStrings';
+import { IEditSubscriptionProps } from './IEditSubscriptionProps';
+import { IEditSubscriptionState } from './IEditSubscriptionState';
 
 export default class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, IEditSubscriptionState> {
   private minDate: Date;
@@ -130,7 +92,7 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
         <Label required={true}>Expiration Date</Label>
         <DatePicker
           firstDayOfWeek={DayOfWeek.Monday}
-          strings={DayPickerStrings}
+          strings={strings.DatePickerStrings}
           placeholder="Select a date..."
           minDate={this.minDate}
           allowTextInput={true}

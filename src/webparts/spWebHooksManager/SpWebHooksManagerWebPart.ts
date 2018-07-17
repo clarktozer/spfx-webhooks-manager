@@ -16,23 +16,12 @@ import { sp } from '@pnp/sp';
 import { PropertyFieldMultiSelect } from '@pnp/spfx-property-controls/lib/PropertyFieldMultiSelect';
 import startCase from 'lodash.startcase';
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
+import { ISpWebHooksManagerWebPartProps } from './interfaces/ISpWebHooksManagerWebPartProps';
+import { QueryType } from './interfaces/QueryType';
 require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
-
-export interface ISpWebHooksManagerWebPartProps {
-  showAdminButtons: boolean;
-  listTemplateTypes: string[];
-  title: string;
-  queryType: QueryType;
-  lists: string[];
-}
-
-export enum QueryType {
-  TEMPLATE = "template",
-  LIST = "list"
-}
 
 export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpWebHooksManagerWebPartProps> {
   private templateTypes: IPropertyPaneDropdownOption[];

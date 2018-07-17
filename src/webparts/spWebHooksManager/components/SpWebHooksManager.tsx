@@ -6,28 +6,13 @@ import { IODataList, } from '@microsoft/sp-odata-types';
 import { autobind } from '@uifabric/utilities/lib';
 import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
 import { Subscription } from '@pnp/sp/src/subscriptions';
-import SubscriptionsList from './SubscriptionsList';
-import { QueryType } from '../SpWebHooksManagerWebPart';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { Overlay } from "office-ui-fabric-react/lib/Overlay";
-
-export interface ISubscription {
-  clientState: string;
-  expirationDateTime: string;
-  id: string;
-  notificationUrl: string;
-  resource: string;
-}
-
-export interface IListSubscription {
-  list: IODataList;
-  subscriptions: ISubscription[];
-}
-
-export interface ISpWebHooksManagerState {
-  listSubscriptions: IListSubscription[];
-  loading: boolean;
-}
+import { IListSubscription } from '../interfaces/IListSubscription';
+import { ISpWebHooksManagerState } from '../interfaces/ISpWebHooksManagerState';
+import { QueryType } from '../interfaces/QueryType';
+import { IAddSubscription } from './AddSubscriptionPanel/IAddSubscription';
+import SubscriptionsList from './SubscriptionList/SubscriptionsList';
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
   private batchLimit = 50;
@@ -49,7 +34,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   }
 
   @autobind
-  private async setSubscriptions() {
+  private async refreshSubscriptions() {
     let listSubscriptions = await this.getSubscriptions();
     this.setState({
       listSubscriptions: listSubscriptions,
@@ -58,7 +43,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   }
 
   public async componentDidMount() {
-    this.setSubscriptions();
+    this.refreshSubscriptions();
   }
 
   public async componentDidUpdate(prevProps: ISpWebHooksManagerProps) {
@@ -66,7 +51,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       || prevProps.queryType !== this.props.queryType
       || prevProps.lists !== this.props.lists) {
       this.setLoading(true);
-      this.setSubscriptions();
+      this.refreshSubscriptions();
     }
   }
 
@@ -98,17 +83,21 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   private async onDeleteWebHook(listId: string, subscriptionId: string) {
     try {
       console.log("onDeleteWebHook", listId, subscriptionId);
+      this.setLoading(true);
       //await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).delete();
+      this.refreshSubscriptions();
     } catch (e) {
       // some error
     }
   }
 
   @autobind
-  private async onAddWebHook(listId: string, notificationUrl: string, expirationDate: string, clientState?: string) {
+  private async onAddWebHook(listId: string, subscription: IAddSubscription) {
     try {
-      console.log("onAddWebHook", listId);
+      console.log("onAddWebHook", listId, subscription);
+      this.setLoading(true);
       //let added = await sp.web.lists.getById(listId).subscriptions.add(notificationUrl, expirationDate, clientState);
+      this.refreshSubscriptions();
     } catch (e) {
 
     }
@@ -120,7 +109,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       console.log("onUpdateWebHook", listId, subscriptionId, expirationDate);
       this.setLoading(true);
       //let updated = await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).update(expirationDate);
-      this.setSubscriptions();
+      this.refreshSubscriptions();
     } catch (e) {
 
     }

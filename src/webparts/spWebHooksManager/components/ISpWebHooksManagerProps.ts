@@ -1,5 +1,5 @@
 import { DisplayMode } from "@microsoft/sp-core-library";
-import { QueryType } from "../SpWebHooksManagerWebPart";
+import { QueryType } from "../interfaces/QueryType";
 
 export interface ISpWebHooksManagerProps {
   showAdminButtons: boolean;

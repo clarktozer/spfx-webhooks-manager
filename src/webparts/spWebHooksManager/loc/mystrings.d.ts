@@ -1,6 +1,7 @@
 declare interface ISpWebHooksManagerWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
+  DatePickerStrings: IDatePickerStrings;
 }
 
 declare module 'SpWebHooksManagerWebPartStrings' {

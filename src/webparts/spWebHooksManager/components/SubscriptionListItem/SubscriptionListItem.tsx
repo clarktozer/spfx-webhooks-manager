@@ -1,17 +1,8 @@
 import * as React from 'react';
-import { ISubscription } from './SpWebHooksManager';
 import { autobind } from '@uifabric/utilities/lib';
-import EditSubscriptionPanel from './EditSubscriptionPanel';
-
-export interface ISubscriptionListItemProps {
-  subscription: ISubscription;
-  onDeleteSubscription: (subscriptionId: string) => void;
-  onUpdateSubscription: (subscriptionId: string, expirationDate: string) => void;
-}
-
-export interface ISubscriptionListItemState {
-  showEditPanel: boolean;
-}
+import { ISubscriptionListItemProps } from './ISubscriptionListItemProps';
+import { ISubscriptionListItemState } from './ISubscriptionListItemState';
+import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPanel';
 
 export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemState> {
   constructor(props: ISubscriptionListItemProps) {
