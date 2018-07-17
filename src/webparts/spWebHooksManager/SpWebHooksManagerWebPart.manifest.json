@@ -15,14 +15,18 @@
 
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
-    "group": { "default": "Other" },
-    "title": { "default": "SPWebHooksManager" },
+    "group": { "default": "Web Hooks" },
+    "title": { "default": "Web Hooks Manager" },
     "description": { "default": "SharePoint framework webpart for managing webhooks for a site" },
-    "officeFabricIconFontName": "Page",
+    "officeFabricIconFontName": "Globe",
     "properties": {
       "title": "Web Hooks Manager",
       "showAdminButtons": true,
-      "listTemplateTypes": ["genericList"]
+      "listTemplateTypes": ["genericList"],
+      "includeHiddenLists": false,
+      "includePrivateLists": false,
+      "lists": [],
+      "queryType": "template"
     }
   }]
 }

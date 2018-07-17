@@ -28,11 +28,17 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
   }
 
   public render(): React.ReactElement<ISubscriptionListItemProps> {
+    let {subscription } = this.props;
     return (
-      <div key={this.props.subscription.id}>
-        {this.props.subscription.id}
+      <div key={subscription.id}>
         <i className={" ms-Icon ms-Icon--ChromeClose"} aria-hidden="true" onClick={this.onDelete}></i>
         <i className={" ms-Icon ms-Icon--EditSolid12"} aria-hidden="true" onClick={this.onUpdate}></i>
+        <ul>
+          <li>clientState: {subscription.clientState}</li>
+          <li>expirationDateTime: {subscription.expirationDateTime}</li>
+          <li>resource: {subscription.resource}</li>
+          <li>notificationUrl: {subscription.notificationUrl}</li>
+        </ul>
       </div>
     );
   }

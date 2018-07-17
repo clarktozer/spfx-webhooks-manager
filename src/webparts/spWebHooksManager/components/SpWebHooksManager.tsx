@@ -7,6 +7,7 @@ import { autobind } from '@uifabric/utilities/lib';
 import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
 import { Subscription } from '@pnp/sp/src/subscriptions';
 import SubscriptionsList from './SubscriptionsList';
+import { QueryType } from '../SpWebHooksManagerWebPart';
 
 export interface ISubscription {
   clientState: string;
@@ -49,22 +50,35 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   }
 
   public async componentDidUpdate(prevProps: ISpWebHooksManagerProps) {
-    if (prevProps.listTemplateTypes !== this.props.listTemplateTypes) {
+    if (prevProps.listTemplateTypes !== this.props.listTemplateTypes
+      || prevProps.queryType !== this.props.queryType
+      || prevProps.lists !== this.props.lists) {
       this.setSubscriptions();
     }
   }
 
   @autobind
-  private generateFilter(): string {
+  private generateListTemplateFilter(): string {
     let map = this.props.listTemplateTypes.map((e) => {
       return `BaseTemplate eq ${SP.ListTemplateType[e]}`;
     });
-    return this.getGenericFilter() + " and (" + map.join(" or ") + ")";
+    return map.join(" or ");
   }
 
   @autobind
-  private getGenericFilter(): string {
-    return "(IsPrivate eq false and Hidden eq false)";
+  private generateListFilter(): string {
+    let listFilter = "Hidden eq false";
+    if (this.props.queryType == QueryType.TEMPLATE) {
+      if (this.props.listTemplateTypes != null && this.props.listTemplateTypes.length > 0) {
+        listFilter += ` and ${this.generateListTemplateFilter()}`;
+      }
+    } else if (this.props.queryType == QueryType.LIST && this.props.lists.length > 0) {
+      let map = this.props.lists.map((e) => {
+        return `Id eq guid'${e}'`;
+      });
+      listFilter += ` and (${map.join(" or ")})`;
+    }
+    return listFilter;
   }
 
   @autobind
@@ -99,7 +113,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
 
   @autobind
   private async getSubscriptions(): Promise<IListSubscription[]> {
-    var lists: IODataList[] = await sp.web.lists.filter(this.generateFilter()).get();
+    var lists: IODataList[] = await sp.web.lists.filter(this.generateListFilter()).get();
     var promises = [];
     let batches = [];
     let batch = sp.createBatch();
