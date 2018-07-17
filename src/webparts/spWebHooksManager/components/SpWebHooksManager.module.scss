@@ -1,5 +1,20 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
-
 .spWebHooksManager {
   font-size: normal;
+}
+
+:global {
+  .loader__overlay {
+    z-index: 2;
+    background-color: rgba(255, 255, 255, .6);
+  }
+  .loader__spinner {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .listSubscriptions {
+    min-height: 100px;
+    position: relative;
+  }
 }
