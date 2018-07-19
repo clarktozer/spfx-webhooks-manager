@@ -17,7 +17,7 @@ export class ConfirmDeleteDialog extends BaseDialog {
     ReactDOM.render(
       <ConfirmDialogContent
         title="Delete"
-        message={"Are you sure you want to delete this item?"}
+        message={"Are you sure you want to delete this subscription?"}
         close={this.close}
         submit={this.submit}
       />, this.domElement);

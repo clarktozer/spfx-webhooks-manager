@@ -13,6 +13,7 @@ import { ISpWebHooksManagerState } from '../interfaces/ISpWebHooksManagerState';
 import { QueryType } from '../interfaces/QueryType';
 import { IAddSubscription } from './AddSubscriptionPanel/IAddSubscription';
 import SubscriptionsList from './SubscriptionList/SubscriptionsList';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
   private batchLimit = 50;
@@ -35,11 +36,20 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
 
   @autobind
   private async refreshSubscriptions() {
-    let listSubscriptions = await this.getSubscriptions();
-    this.setState({
-      listSubscriptions: listSubscriptions,
-      loading: false
-    });
+    try {
+      let listSubscriptions = await this.getSubscriptions();
+      this.setState({
+        listSubscriptions: listSubscriptions,
+        loading: false,
+        error: false
+      });
+    } catch (e) {
+      console.log(e);
+      this.setState({
+        loading: false,
+        error: true
+      });
+    }
   }
 
   public async componentDidMount() {
@@ -87,7 +97,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       //await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).delete();
       this.refreshSubscriptions();
     } catch (e) {
-      // some error
+      console.log(e);
     }
   }
 
@@ -99,7 +109,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       //let added = await sp.web.lists.getById(listId).subscriptions.add(notificationUrl, expirationDate, clientState);
       this.refreshSubscriptions();
     } catch (e) {
-
+      console.log(e);
     }
   }
 
@@ -111,7 +121,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       //let updated = await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).update(expirationDate);
       this.refreshSubscriptions();
     } catch (e) {
-
+      console.log(e);
     }
   }
 
@@ -141,17 +151,31 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   }
 
   public render(): React.ReactElement<ISpWebHooksManagerProps> {
+    const { updateProperty, title, displayMode } = this.props;
+    const { listSubscriptions, error, loading } = this.state;
+
     return (
       <div className={styles.spWebHooksManager}>
         <div className="ms-Grid-row">
           <div className="ms-Grid-col ms-sm12">
-            <WebPartTitle displayMode={this.props.displayMode}
-              title={this.props.title}
-              updateProperty={this.props.updateProperty} />
+            <WebPartTitle displayMode={displayMode}
+              title={title}
+              updateProperty={updateProperty} />
+            {
+              error ?
+                <MessageBar
+                  messageBarType={MessageBarType.error}
+                  dismissButtonAriaLabel="Close">
+                  There was an error fetching the web hook subscriptions
+                </MessageBar>
+                :
+                null
+            }
             <div className="listSubscriptions">
               {
-                this.state.listSubscriptions.map((e) => {
+                listSubscriptions.map((e, i) => {
                   return <SubscriptionsList
+                    key={`subscriptionList-${i}`}
                     listSubscription={e}
                     onAddSubscription={this.onAddWebHook}
                     onDeleteSubscription={this.onDeleteWebHook}
@@ -160,7 +184,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
                 })
               }
               {
-                this.state.loading ?
+                loading ?
                   <div className="loader">
                     <Overlay className="loader__overlay">
                       <Spinner className="loader__spinner" size={SpinnerSize.large} label={"Loading..."} />

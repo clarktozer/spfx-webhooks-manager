@@ -30,7 +30,6 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
     const element: React.ReactElement<ISpWebHooksManagerProps> = React.createElement(
       SpWebHooksManager,
       {
-        showAdminButtons: this.properties.showAdminButtons,
         listTemplateTypes: this.properties.listTemplateTypes,
         displayMode: this.displayMode,
         updateProperty: (value: string) => {
@@ -134,14 +133,6 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
             {
               groupName: strings.BasicGroupName,
               groupFields: queryGroup
-            },
-            {
-              groupName: "Styling",
-              groupFields: [
-                PropertyPaneCheckbox('showAdminButtons', {
-                  text: "Show Admin Buttons?"
-                })
-              ]
             }
           ]
         }

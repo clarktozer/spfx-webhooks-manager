@@ -6,6 +6,7 @@ import { IAddSubscription } from '../AddSubscriptionPanel/IAddSubscription';
 import { ConfirmDeleteDialog } from '../ConfirmDeleteDialog/ConfirmDeleteDialog';
 import SubscriptionListItem from '../SubscriptionListItem/SubscriptionListItem';
 import AddSubscriptionPanel from '../AddSubscriptionPanel/AddSubscriptionPanel';
+import FabricIconButton from '../FabricIconButton/FabricIconButton';
 
 export default class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscriptionListState> {
   constructor(props: ISubscriptionListProps) {
@@ -65,24 +66,39 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
 
   public render(): React.ReactElement<ISubscriptionListProps> {
     const { listSubscription } = this.props;
+    const { onExpanded } = this.state;
+
     return (
       <div key={listSubscription.list.Id}>
-        <h3>
-          <i className={" ms-Icon ms-Icon--ChevronDown"} aria-hidden="true" onClick={this.onToggleExpand}></i>
-          <i className={" ms-Icon ms-Icon--Add"} aria-hidden="true" onClick={this.onEnablePanel}></i>
-          {listSubscription.list.Title} ({listSubscription.subscriptions.length})
+        <h3 className="subscriptionListHeader">
+          <FabricIconButton
+            key="expand"
+            fabricIconName={onExpanded ? "ChevronUp rotate" : "ChevronUp rotate down"}
+            onClick={this.onToggleExpand}
+            tooltipText={onExpanded ? "Hide Subscriptions" : "Expand Subscriptions"}
+          />
+          <FabricIconButton
+            key="add"
+            fabricIconName="Add"
+            onClick={this.onEnablePanel}
+            tooltipText="Add Subscription"
+          />
+          <span className="title">{listSubscription.list.Title} ({listSubscription.subscriptions.length})</span>
         </h3>
         {
           this.state.onExpanded ?
             <div className="subscriptions">
               {
-                listSubscription.subscriptions.map((s) => {
-                  return <SubscriptionListItem
-                    subscription={s}
-                    onDeleteSubscription={this.onConfirmDelete}
-                    onUpdateSubscription={this.onUpdate}
-                  />;
-                })
+                listSubscription.subscriptions.length > 0 ?
+                  listSubscription.subscriptions.map((s) => {
+                    return <SubscriptionListItem
+                      subscription={s}
+                      onDeleteSubscription={this.onConfirmDelete}
+                      onUpdateSubscription={this.onUpdate}
+                    />;
+                  })
+                  :
+                  <div className="noSubscriptions">No subscriptions</div>
               }
             </div>
             : null

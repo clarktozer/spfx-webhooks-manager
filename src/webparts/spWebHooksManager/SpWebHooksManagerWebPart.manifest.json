@@ -21,7 +21,6 @@
     "officeFabricIconFontName": "Globe",
     "properties": {
       "title": "Web Hooks Manager",
-      "showAdminButtons": true,
       "listTemplateTypes": ["genericList"],
       "includeHiddenLists": false,
       "includePrivateLists": false,
