@@ -79,7 +79,7 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
           <span className="title">{listSubscription.list.Title} ({listSubscription.subscriptions.length})</span>
         </h3>
         {
-          this.state.onExpanded ?
+          onExpanded ?
             <div className="subscriptions">
               {
                 listSubscription.subscriptions.length > 0 ?

@@ -29,9 +29,17 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   }
 
   @autobind
-  private setLoading(isLoading: boolean) {
+  private setSubscriptionsLoading(loading: boolean) {
     this.setState({
-      loadingSubscriptions: isLoading
+      loadingSubscriptions: loading
+    });
+  }
+
+  @autobind
+  private setError() {
+    this.setState({
+      loadingSubscriptions: false,
+      error: true
     });
   }
 
@@ -45,10 +53,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         error: false
       });
     } catch (e) {
-      this.setState({
-        loadingSubscriptions: false,
-        error: true
-      });
+      this.setError();
     }
   }
 
@@ -60,7 +65,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
     if (prevProps.listTemplateTypes !== this.props.listTemplateTypes
       || prevProps.queryType !== this.props.queryType
       || prevProps.lists !== this.props.lists) {
-      this.setLoading(true);
+      this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     }
   }
@@ -95,11 +100,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       console.log("onDeleteWebHook", listId, subscriptionId);
       await this.delay();
       //await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).delete();
-      this.setLoading(true);
+      this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
+      throw "";
     } catch (e) {
       Dialog.alert("an error adding has occurred");
-      this.setLoading(false);
+      this.setSubscriptionsLoading(false);
     }
   }
 
@@ -109,11 +115,11 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       console.log("onAddWebHook", listId, subscription);
       //let added = await sp.web.lists.getById(listId).subscriptions.add(notificationUrl, expirationDate, clientState);
       await this.delay();
-      this.setLoading(true);
+      this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
       Dialog.alert("an error adding has occurred");
-      this.setLoading(false);
+      this.setSubscriptionsLoading(false);
     }
   }
 
@@ -123,12 +129,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       console.log("onUpdateWebHook", listId, subscriptionId, expirationDate);
       await this.delay();
       //let updated = await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).update(expirationDate);
-      this.setLoading(true);
+      this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
-      throw "error"
+      throw "error";
     } catch (e) {
       Dialog.alert("an error adding has occurred");
-      this.setLoading(false);
+      this.setSubscriptionsLoading(false);
     }
   }
 
@@ -137,7 +143,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve();
-      }, 5000)
+      }, 5000);
     });
   }
 

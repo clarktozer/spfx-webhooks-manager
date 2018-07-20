@@ -118,10 +118,11 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
 
   public render(): React.ReactElement<IAddSubscriptionProps> {
     const { expirationDateTime, clientState, notificationUrl } = this.state;
+    const { enabled } = this.props;
 
     return (
       <Panel
-        isOpen={this.props.enabled}
+        isOpen={enabled}
         type={PanelType.smallFixedFar}
         onDismiss={this.onCloseEditPanel}
         headerText={`Add Subscription`}

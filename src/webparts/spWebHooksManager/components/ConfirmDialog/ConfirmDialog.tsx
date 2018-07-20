@@ -40,20 +40,21 @@ export default class ConfirmDialog extends React.Component<IConfirmDialogProps, 
   }
 
   public render(): React.ReactElement<IConfirmDialogProps> {
+    const { title, message, loadingMessage, onClose } = this.props;
 
     return (
       <div>
         <Dialog
           hidden={false}
-          onDismiss={this.props.onClose}
+          onDismiss={onClose}
           dialogContentProps={{
             type: DialogType.normal,
-            title: this.props.title,
-            subText: this.props.message
+            title: title,
+            subText: message
           }}>
           {
             this.state.loading ?
-              <div><Spinner className="" size={SpinnerSize.large} label={this.props.loadingMessage} /></div>
+              <div><Spinner className="" size={SpinnerSize.large} label={loadingMessage} /></div>
               :
               <DialogFooter>
                 <DefaultButton disabled={this.state.loading} onClick={this.onSubmit} text="OK" primary={true} />

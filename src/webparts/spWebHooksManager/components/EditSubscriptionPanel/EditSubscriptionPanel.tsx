@@ -92,11 +92,12 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   }
 
   public render(): React.ReactElement<IEditSubscriptionProps> {
-    const { subscription } = this.props;
+    const { subscription, enabled } = this.props;
+    const { expirationDateTime } = this.state;
 
     return (
       <Panel
-        isOpen={this.props.enabled}
+        isOpen={enabled}
         type={PanelType.smallFixedFar}
         onDismiss={this.onCloseEditPanel}
         headerText={`Edit Subscription`}
@@ -121,7 +122,7 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
           placeholder="Select a date..."
           minDate={this.minDate}
           allowTextInput={true}
-          value={this.state.expirationDateTime}
+          value={expirationDateTime}
           onSelectDate={this.onSelectDate} />
         <DefaultButton onClick={this.onAddToDate}>Add 90 Days</DefaultButton>
       </Panel>

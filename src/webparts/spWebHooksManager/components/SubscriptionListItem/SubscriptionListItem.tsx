@@ -27,6 +27,11 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
   }
 
   @autobind
+  private onToggle(e) {
+    console.log(e);
+  }
+
+  @autobind
   private onClosePanel() {
     this.setState({
       showEditPanel: false
@@ -70,9 +75,9 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
               tooltipText="Edit Subscription"
             />
             <FabricIconButton
-              key="delete"
+              key="showDeletePanel"
               fabricIconName="ChromeClose"
-              onClick={this.showDeleteDialog}
+              onClick={this.onToggle}
               tooltipText="Delete Subscription"
             />
           </div>
