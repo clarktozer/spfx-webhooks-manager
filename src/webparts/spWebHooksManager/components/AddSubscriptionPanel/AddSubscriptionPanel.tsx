@@ -8,6 +8,7 @@ import * as strings from 'SpWebHooksManagerWebPartStrings';
 import { IAddSubscriptionProps } from './IAddSubscriptionProps';
 import { IAddSubscriptionState } from './IAddSubscriptionState';
 import { IAddSubscription } from './IAddSubscription';
+import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 
 export default class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, IAddSubscriptionState> {
   private minDate: Date;
@@ -19,7 +20,8 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
     this.state = {
       expirationDateTime: this.minDate,
       notificationUrl: "",
-      error: true
+      error: true,
+      loading: false
     };
   }
 
@@ -32,19 +34,23 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
 
   @autobind
   private onCloseEditPanel() {
-
     this.props.onClosePanel();
   }
 
   @autobind
-  private onSave() {
+  private async onSave() {
     let subscription: IAddSubscription = {
       expirationDateTime: this.state.expirationDateTime,
       notificationUrl: this.state.notificationUrl,
       clientState: this.state.clientState
     };
-    this.props.onAdd(subscription);
-    this.props.onClosePanel();
+    this.setState({
+      loading: true
+    });
+    await this.props.onAdd(subscription);
+    this.setState({
+      loading: false
+    });
   }
 
   @autobind
@@ -56,12 +62,21 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
 
   @autobind
   private onRenderFooterContent() {
+    const { error, loading } = this.state;
+
     return (
       <div>
-        <PrimaryButton disabled={this.state.error} onClick={this.onSave} style={{ marginRight: '8px' }}>
-          Save
-        </PrimaryButton>
-        <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
+        {
+          loading ?
+            <div><Spinner className="" size={SpinnerSize.large} label={"Adding new subscription..."} /></div>
+            :
+            <div>
+              <PrimaryButton disabled={error} onClick={this.onSave} style={{ marginRight: '8px' }}>
+                Save
+              </PrimaryButton>
+              <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
+            </div>
+        }
       </div>
     );
   }

@@ -3,7 +3,7 @@ import { IAddSubscription } from "../AddSubscriptionPanel/IAddSubscription";
 
 export interface ISubscriptionListProps {
   listSubscription: IListSubscription;
-  onDeleteSubscription: (listId: string, subscriptionId: string) => void;
-  onAddSubscription: (listId: string, subscription: IAddSubscription) => void;
-  onUpdateSubscription: (listId: string, subscriptionId: string, expirationDate: string) => void;
+  onDeleteSubscription: (listId: string, subscriptionId: string) => Promise<void>;
+  onAddSubscription: (listId: string, subscription: IAddSubscription) => Promise<void>;
+  onUpdateSubscription: (listId: string, subscriptionId: string, expirationDate: string) => Promise<void>;
 }

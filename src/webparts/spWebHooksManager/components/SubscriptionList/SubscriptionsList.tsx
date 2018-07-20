@@ -3,7 +3,7 @@ import { autobind } from '@uifabric/utilities/lib';
 import { ISubscriptionListProps } from './ISubscriptionListProps';
 import { ISubscriptionListState } from './ISubscriptionListState';
 import { IAddSubscription } from '../AddSubscriptionPanel/IAddSubscription';
-import { ConfirmDeleteDialog } from '../ConfirmDeleteDialog/ConfirmDeleteDialog';
+// import { ConfirmDeleteDialog } from '../ConfirmDeleteDialog/ConfirmDeleteDialog';
 import SubscriptionListItem from '../SubscriptionListItem/SubscriptionListItem';
 import AddSubscriptionPanel from '../AddSubscriptionPanel/AddSubscriptionPanel';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
@@ -40,33 +40,26 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
   }
 
   @autobind
-  private onAdd(subscription: IAddSubscription) {
-    this.props.onAddSubscription(this.props.listSubscription.list.Id, subscription);
-  }
-
-  @autobind
-  private onDelete(subscriptionId: string) {
-    this.props.onDeleteSubscription(this.props.listSubscription.list.Id, subscriptionId);
-  }
-
-  @autobind
-  private onConfirmDelete(subscriptionId: string) {
-    let dialog = new ConfirmDeleteDialog({
-      onDeleteSubscription: () => {
-        this.onDelete(subscriptionId);
-      }
+  private async onAdd(subscription: IAddSubscription) {
+    await this.props.onAddSubscription(this.props.listSubscription.list.Id, subscription);
+    this.setState({
+      showAddPanel: false
     });
-    dialog.show();
   }
 
   @autobind
-  private onUpdate(subscriptionId: string, expirationDate: string) {
-    this.props.onUpdateSubscription(this.props.listSubscription.list.Id, subscriptionId, expirationDate);
+  private async onDelete(subscriptionId: string): Promise<void> {
+    await this.props.onDeleteSubscription(this.props.listSubscription.list.Id, subscriptionId);
+  }
+
+  @autobind
+  private async onUpdate(subscriptionId: string, expirationDate: string): Promise<void> {
+    await this.props.onUpdateSubscription(this.props.listSubscription.list.Id, subscriptionId, expirationDate);
   }
 
   public render(): React.ReactElement<ISubscriptionListProps> {
     const { listSubscription } = this.props;
-    const { onExpanded } = this.state;
+    const { onExpanded, showAddPanel } = this.state;
 
     return (
       <div key={listSubscription.list.Id}>
@@ -93,7 +86,7 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
                   listSubscription.subscriptions.map((s) => {
                     return <SubscriptionListItem
                       subscription={s}
-                      onDeleteSubscription={this.onConfirmDelete}
+                      onDeleteSubscription={this.onDelete}
                       onUpdateSubscription={this.onUpdate}
                     />;
                   })
@@ -104,9 +97,9 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
             : null
         }
         {
-          this.state.showAddPanel ?
+          showAddPanel ?
             <AddSubscriptionPanel
-              enabled={this.state.showAddPanel}
+              enabled={showAddPanel}
               onClosePanel={this.onClosePanel}
               onAdd={this.onAdd} />
             : null

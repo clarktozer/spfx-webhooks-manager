@@ -5,7 +5,7 @@ import { sp } from '@pnp/sp';
 import { IODataList, } from '@microsoft/sp-odata-types';
 import { autobind } from '@uifabric/utilities/lib';
 import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
-import { Subscription } from '@pnp/sp/src/subscriptions';
+import { Subscription, SubscriptionAddResult } from '@pnp/sp/src/subscriptions';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { Overlay } from "office-ui-fabric-react/lib/Overlay";
 import { IListSubscription } from '../interfaces/IListSubscription';
@@ -14,6 +14,7 @@ import { QueryType } from '../interfaces/QueryType';
 import { IAddSubscription } from './AddSubscriptionPanel/IAddSubscription';
 import SubscriptionsList from './SubscriptionList/SubscriptionsList';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import { Dialog } from '@microsoft/sp-dialog';
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
   private batchLimit = 50;
@@ -23,14 +24,14 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
 
     this.state = {
       listSubscriptions: [],
-      loading: true
+      loadingSubscriptions: true
     };
   }
 
   @autobind
   private setLoading(isLoading: boolean) {
     this.setState({
-      loading: isLoading
+      loadingSubscriptions: isLoading
     });
   }
 
@@ -40,13 +41,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       let listSubscriptions = await this.getSubscriptions();
       this.setState({
         listSubscriptions: listSubscriptions,
-        loading: false,
+        loadingSubscriptions: false,
         error: false
       });
     } catch (e) {
-      console.log(e);
       this.setState({
-        loading: false,
+        loadingSubscriptions: false,
         error: true
       });
     }
@@ -90,39 +90,55 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   }
 
   @autobind
-  private async onDeleteWebHook(listId: string, subscriptionId: string) {
+  private async onDeleteWebHook(listId: string, subscriptionId: string): Promise<void> {
     try {
       console.log("onDeleteWebHook", listId, subscriptionId);
-      this.setLoading(true);
+      await this.delay();
       //await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).delete();
+      this.setLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
-      console.log(e);
+      Dialog.alert("an error adding has occurred");
+      this.setLoading(false);
     }
   }
 
   @autobind
-  private async onAddWebHook(listId: string, subscription: IAddSubscription) {
+  private async onAddWebHook(listId: string, subscription: IAddSubscription): Promise<void> {
     try {
       console.log("onAddWebHook", listId, subscription);
-      this.setLoading(true);
       //let added = await sp.web.lists.getById(listId).subscriptions.add(notificationUrl, expirationDate, clientState);
+      await this.delay();
+      this.setLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
-      console.log(e);
+      Dialog.alert("an error adding has occurred");
+      this.setLoading(false);
     }
   }
 
   @autobind
-  private async onUpdateWebHook(listId: string, subscriptionId: string, expirationDate: string) {
+  private async onUpdateWebHook(listId: string, subscriptionId: string, expirationDate: string): Promise<void> {
     try {
       console.log("onUpdateWebHook", listId, subscriptionId, expirationDate);
-      this.setLoading(true);
+      await this.delay();
       //let updated = await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).update(expirationDate);
+      this.setLoading(true);
       this.refreshSubscriptions();
+      throw "error"
     } catch (e) {
-      console.log(e);
+      Dialog.alert("an error adding has occurred");
+      this.setLoading(false);
     }
+  }
+
+  @autobind
+  private delay() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 5000)
+    });
   }
 
   @autobind
@@ -152,7 +168,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
 
   public render(): React.ReactElement<ISpWebHooksManagerProps> {
     const { updateProperty, title, displayMode } = this.props;
-    const { listSubscriptions, error, loading } = this.state;
+    const { listSubscriptions, error, loadingSubscriptions } = this.state;
 
     return (
       <div className={styles.spWebHooksManager}>
@@ -184,7 +200,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
                 })
               }
               {
-                loading ?
+                loadingSubscriptions ?
                   <div className="loader">
                     <Overlay className="loader__overlay">
                       <Spinner className="loader__spinner" size={SpinnerSize.large} label={"Loading..."} />

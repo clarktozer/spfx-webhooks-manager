@@ -8,6 +8,7 @@ import { autobind } from '@uifabric/utilities/lib';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import { IEditSubscriptionProps } from './IEditSubscriptionProps';
 import { IEditSubscriptionState } from './IEditSubscriptionState';
+import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 
 export default class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, IEditSubscriptionState> {
   private minDate: Date;
@@ -17,7 +18,9 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
     this.minDate = new Date(props.subscription.expirationDateTime);
 
     this.state = {
-      expirationDateTime: new Date(props.subscription.expirationDateTime)
+      expirationDateTime: new Date(props.subscription.expirationDateTime),
+      loading: false,
+      error: false
     };
   }
 
@@ -34,9 +37,12 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   }
 
   @autobind
-  private onSave() {
-    this.props.onUpdate(this.state.expirationDateTime.toISOString());
-    this.props.onClosePanel();
+  private async onSave() {
+    this.setState({
+      loading: true
+    });
+    await this.props.onUpdate(this.state.expirationDateTime.toISOString());
+    this.onCloseEditPanel();
   }
 
   @autobind
@@ -50,12 +56,21 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
 
   @autobind
   private onRenderFooterContent() {
+    const { error, loading } = this.state;
+
     return (
       <div>
-        <PrimaryButton onClick={this.onSave} style={{ marginRight: '8px' }}>
-          Save
-        </PrimaryButton>
-        <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
+        {
+          loading ?
+            <div><Spinner className="" size={SpinnerSize.large} label={"Updating subscription..."} /></div>
+            :
+            <div>
+              <PrimaryButton disabled={error} onClick={this.onSave} style={{ marginRight: '8px' }}>
+                Save
+              </PrimaryButton>
+              <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
+            </div>
+        }
       </div>
     );
   }
@@ -64,6 +79,15 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   private onSelectDate(date: Date) {
     this.setState({
       expirationDateTime: date
+    }, () => {
+      this.onError();
+    });
+  }
+
+  @autobind
+  private onError() {
+    this.setState({
+      error: this.state.expirationDateTime == null
     });
   }
 
@@ -79,19 +103,20 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
         closeButtonAriaLabel="Close"
         onRenderFooterContent={this.onRenderFooterContent}>
         <Label>ID</Label>
-        <TextField disabled={true} value={subscription.id} />
+        <TextField readOnly={true} value={subscription.id} />
         <Label>Notification URL</Label>
-        <TextField disabled={true} value={subscription.notificationUrl} />
+        <TextField readOnly={true} value={subscription.notificationUrl} />
         <Label>Resource</Label>
-        <TextField disabled={true} value={subscription.resource} />
+        <TextField readOnly={true} value={subscription.resource} />
         <Label>Client State</Label>
-        <TextField disabled={true}
+        <TextField readOnly={true}
           value={subscription.clientState != null
             && subscription.clientState.length > 0
             ? subscription.clientState : "N/A"} />
         <Label required={true}>Expiration Date</Label>
         <DatePicker
           firstDayOfWeek={DayOfWeek.Monday}
+          isRequired={true}
           strings={strings.DatePickerStrings}
           placeholder="Select a date..."
           minDate={this.minDate}

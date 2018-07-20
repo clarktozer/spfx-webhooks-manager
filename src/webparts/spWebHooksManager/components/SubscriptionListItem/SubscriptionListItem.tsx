@@ -4,24 +4,26 @@ import { ISubscriptionListItemProps } from './ISubscriptionListItemProps';
 import { ISubscriptionListItemState } from './ISubscriptionListItemState';
 import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPanel';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 
 export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemState> {
   constructor(props: ISubscriptionListItemProps) {
     super(props);
 
     this.state = {
-      showEditPanel: false
+      showEditPanel: false,
+      showDeletePanel: false
     };
   }
 
   @autobind
-  private onDelete() {
-    this.props.onDeleteSubscription(this.props.subscription.id);
+  private async onDelete() {
+    await this.props.onDeleteSubscription(this.props.subscription.id);
   }
 
   @autobind
-  private onUpdate(expirationDateTime: string) {
-    this.props.onUpdateSubscription(this.props.subscription.id, expirationDateTime);
+  private async onUpdate(expirationDateTime: string): Promise<void> {
+    await this.props.onUpdateSubscription(this.props.subscription.id, expirationDateTime);
   }
 
   @autobind
@@ -38,8 +40,24 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
     });
   }
 
+  @autobind
+  private showDeleteDialog() {
+    this.setState({
+      showDeletePanel: true
+    });
+  }
+
+  @autobind
+  private closeDeleteDialog() {
+    this.setState({
+      showDeletePanel: false
+    });
+  }
+
   public render(): React.ReactElement<ISubscriptionListItemProps> {
-    let { subscription } = this.props;
+    const { subscription } = this.props;
+    const { showEditPanel, showDeletePanel } = this.state;
+
     return (
       <div className="subscriptionItem" key={subscription.id}>
         <h4 className="subscriptionItemHeader clearfix">
@@ -54,7 +72,7 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             <FabricIconButton
               key="delete"
               fabricIconName="ChromeClose"
-              onClick={this.onDelete}
+              onClick={this.showDeleteDialog}
               tooltipText="Delete Subscription"
             />
           </div>
@@ -86,11 +104,26 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             </div>
           </li>
         </ul>
-        <EditSubscriptionPanel
-          enabled={this.state.showEditPanel}
-          subscription={subscription}
-          onClosePanel={this.onClosePanel}
-          onUpdate={this.onUpdate} />
+        {
+          showEditPanel ?
+            <EditSubscriptionPanel
+              key={"edit-" + subscription.id}
+              enabled={showEditPanel}
+              subscription={subscription}
+              onClosePanel={this.onClosePanel}
+              onUpdate={this.onUpdate} />
+            : null
+        }
+        {
+          showDeletePanel ?
+            <ConfirmDialog
+              onSubmit={this.onDelete}
+              onClose={this.closeDeleteDialog}
+              title="Delete Subscription"
+              message="Are you sure you want to delete this subscription?"
+              loadingMessage="Deleting subscription..."/>
+            : null
+        }
       </div>
     );
   }

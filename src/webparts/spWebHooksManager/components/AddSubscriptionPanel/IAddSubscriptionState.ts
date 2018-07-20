@@ -3,4 +3,5 @@ export interface IAddSubscriptionState {
   notificationUrl: string;
   clientState?: string;
   error: boolean;
+  loading: boolean;
 }
