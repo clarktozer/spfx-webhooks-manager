@@ -65,13 +65,11 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
       <div key={listSubscription.list.Id}>
         <h3 className="subscriptionListHeader">
           <FabricIconButton
-            key="expand"
             fabricIconName={onExpanded ? "ChevronUp rotate" : "ChevronUp rotate down"}
             onClick={this.onToggleExpand}
             tooltipText={onExpanded ? "Hide Subscriptions" : "Expand Subscriptions"}
           />
           <FabricIconButton
-            key="add"
             fabricIconName="Add"
             onClick={this.onEnablePanel}
             tooltipText="Add Subscription"
@@ -85,6 +83,7 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
                 listSubscription.subscriptions.length > 0 ?
                   listSubscription.subscriptions.map((s) => {
                     return <SubscriptionListItem
+                    key={s.id}
                       subscription={s}
                       onDeleteSubscription={this.onDelete}
                       onUpdateSubscription={this.onUpdate}

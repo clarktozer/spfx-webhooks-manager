@@ -104,7 +104,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       this.refreshSubscriptions();
       throw "";
     } catch (e) {
-      Dialog.alert("an error adding has occurred");
+      Dialog.alert("an error deleting has occurred");
       this.setSubscriptionsLoading(false);
     }
   }
@@ -133,7 +133,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       this.refreshSubscriptions();
       throw "error";
     } catch (e) {
-      Dialog.alert("an error adding has occurred");
+      Dialog.alert("an error updating has occurred");
       this.setSubscriptionsLoading(false);
     }
   }

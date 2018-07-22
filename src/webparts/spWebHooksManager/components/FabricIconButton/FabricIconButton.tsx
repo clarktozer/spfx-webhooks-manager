@@ -9,21 +9,18 @@ export default class FabricIconButton extends React.Component<IFabricIconButtonP
   }
 
   @autobind
-  private onClick(e) {
-    debugger;
-
-    console.log(e);
-    this.props.onClick("");
+  private onClick(e: React.SyntheticEvent<HTMLElement>) {
+    this.props.onClick(e.currentTarget.getAttribute("data-key"));
   }
 
   public render(): React.ReactElement<IFabricIconButtonProps> {
-    const { fabricIconName, tooltipText } = this.props;
+    const { fabricIconName, tooltipText, stateKey } = this.props;
 
     return (
       <TooltipHost content={tooltipText} delay={TooltipDelay.long}>
         <div className="fabricIconContainer">
           <div className="fabricIconCircle"></div>
-          <div className="fabricIcon" onClick={this.onClick}>
+          <div className="fabricIcon" onClick={this.onClick} data-key={stateKey}>
             <i className={`ms-Icon ms-Icon--${fabricIconName}`} aria-hidden="true"></i>
           </div>
         </div>

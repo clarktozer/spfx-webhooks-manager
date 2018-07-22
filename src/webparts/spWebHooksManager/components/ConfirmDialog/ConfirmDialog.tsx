@@ -5,18 +5,8 @@ import { autobind } from '@uifabric/utilities/lib';
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
-
-export interface IConfirmDialogProps {
-  onSubmit: () => Promise<void>;
-  onClose: () => void;
-  title: string;
-  message: string;
-  loadingMessage: string;
-}
-
-export interface IConfirmDialogState {
-  loading: boolean;
-}
+import { IConfirmDialogProps } from './IConfirmDialogProps';
+import { IConfirmDialogState } from './IConfirmDialogState';
 
 export default class ConfirmDialog extends React.Component<IConfirmDialogProps, IConfirmDialogState> {
   constructor(props: IConfirmDialogProps) {
@@ -28,15 +18,18 @@ export default class ConfirmDialog extends React.Component<IConfirmDialogProps, 
   }
 
   @autobind
-  private async onSubmit() {
+  private setLoading(loading: boolean) {
     this.setState({
-      loading: true
+      loading: loading
     });
+  }
+
+  @autobind
+  private async onSubmit() {
+    this.setLoading(true);
     await this.props.onSubmit();
     this.props.onClose();
-    this.setState({
-      loading: false
-    });
+    this.setLoading(false);
   }
 
   public render(): React.ReactElement<IConfirmDialogProps> {

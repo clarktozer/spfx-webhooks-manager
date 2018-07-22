@@ -27,29 +27,10 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
   }
 
   @autobind
-  private onToggle(e) {
-    console.log(e);
-  }
-
-  @autobind
-  private onClosePanel() {
-    this.setState({
-      showEditPanel: false
-    });
-  }
-
-  @autobind
-  private onEnablePanel() {
-    this.setState({
-      showEditPanel: true
-    });
-  }
-
-  @autobind
-  private showDeleteDialog() {
-    this.setState({
-      showDeletePanel: true
-    });
+  private onTogglePanel(key: string) {
+    this.setState(() => ({
+      [key]: !this.state[key]
+    }));
   }
 
   @autobind
@@ -59,25 +40,32 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
     });
   }
 
+  @autobind
+  private closeEditPanel() {
+    this.setState({
+      showEditPanel: false
+    });
+  }
+
   public render(): React.ReactElement<ISubscriptionListItemProps> {
     const { subscription } = this.props;
     const { showEditPanel, showDeletePanel } = this.state;
 
     return (
-      <div className="subscriptionItem" key={subscription.id}>
+      <div className="subscriptionItem">
         <h4 className="subscriptionItemHeader clearfix">
           Subscription
           <div className="fRight">
             <FabricIconButton
-              key="edit"
+              stateKey="showEditPanel"
               fabricIconName="Edit"
-              onClick={this.onEnablePanel}
+              onClick={this.onTogglePanel}
               tooltipText="Edit Subscription"
             />
             <FabricIconButton
-              key="showDeletePanel"
+              stateKey="showDeletePanel"
               fabricIconName="ChromeClose"
-              onClick={this.onToggle}
+              onClick={this.onTogglePanel}
               tooltipText="Delete Subscription"
             />
           </div>
@@ -112,10 +100,9 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
         {
           showEditPanel ?
             <EditSubscriptionPanel
-              key={"edit-" + subscription.id}
               enabled={showEditPanel}
               subscription={subscription}
-              onClosePanel={this.onClosePanel}
+              onClosePanel={this.closeEditPanel}
               onUpdate={this.onUpdate} />
             : null
         }
