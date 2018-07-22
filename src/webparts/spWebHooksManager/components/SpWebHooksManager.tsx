@@ -15,6 +15,7 @@ import { IAddSubscription } from './AddSubscriptionPanel/IAddSubscription';
 import SubscriptionsList from './SubscriptionList/SubscriptionsList';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { Dialog } from '@microsoft/sp-dialog';
+import { ErrorDialog } from './ErrorDialog/ErrorDialog';
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
   private batchLimit = 50;
@@ -104,7 +105,8 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
       this.refreshSubscriptions();
       throw "";
     } catch (e) {
-      Dialog.alert("an error deleting has occurred");
+      let dialog = new ErrorDialog();
+      dialog.show();
       this.setSubscriptionsLoading(false);
     }
   }
