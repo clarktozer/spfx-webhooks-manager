@@ -3,10 +3,10 @@ import { autobind } from '@uifabric/utilities/lib';
 import { ISubscriptionListProps } from './ISubscriptionListProps';
 import { ISubscriptionListState } from './ISubscriptionListState';
 import { IAddSubscription } from '../AddSubscriptionPanel/IAddSubscription';
-// import { ConfirmDeleteDialog } from '../ConfirmDeleteDialog/ConfirmDeleteDialog';
 import SubscriptionListItem from '../SubscriptionListItem/SubscriptionListItem';
 import AddSubscriptionPanel from '../AddSubscriptionPanel/AddSubscriptionPanel';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
+import * as strings from 'SpWebHooksManagerWebPartStrings';
 
 export default class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscriptionListState> {
   constructor(props: ISubscriptionListProps) {
@@ -67,12 +67,12 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
           <FabricIconButton
             fabricIconName={onExpanded ? "ChevronUp rotate" : "ChevronUp rotate down"}
             onClick={this.onToggleExpand}
-            tooltipText={onExpanded ? "Hide Subscriptions" : "Expand Subscriptions"}
+            tooltipText={onExpanded ? strings.HideSubscriptions : strings.ExpandSubscriptions}
           />
           <FabricIconButton
             fabricIconName="Add"
             onClick={this.onEnablePanel}
-            tooltipText="Add Subscription"
+            tooltipText={strings.AddSubscription}
           />
           <span className="title">{listSubscription.list.Title} ({listSubscription.subscriptions.length})</span>
         </h3>
@@ -90,7 +90,7 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
                     />;
                   })
                   :
-                  <div className="noSubscriptions">No subscriptions</div>
+                  <div className="noSubscriptions">{strings.NoSubscriptions}</div>
               }
             </div>
             : null

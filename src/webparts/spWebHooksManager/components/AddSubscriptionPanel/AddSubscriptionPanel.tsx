@@ -12,10 +12,13 @@ import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 
 export default class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, IAddSubscriptionState> {
   private minDate: Date;
+  private maxDate: Date;
   constructor(props: IAddSubscriptionProps) {
     super(props);
 
-    this.minDate = new Date();
+    let currentDate = new Date();
+    this.minDate = this.addDays(currentDate.toISOString(), 1);
+    this.maxDate = this.addDays(currentDate.toISOString(), 90);
 
     this.state = {
       expirationDateTime: this.minDate,
@@ -68,12 +71,10 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
       <div>
         {
           loading ?
-            <div><Spinner className="" size={SpinnerSize.large} label={"Adding new subscription..."} /></div>
+            <Spinner size={SpinnerSize.large} label={strings.AddingSubscription} />
             :
-            <div>
-              <PrimaryButton disabled={error} onClick={this.onSave} style={{ marginRight: '8px' }}>
-                Save
-              </PrimaryButton>
+            <div  className="panelButtons">
+              <DefaultButton disabled={error} onClick={this.onSave} text={strings.Save} primary={true} />
               <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
             </div>
         }
@@ -101,7 +102,7 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
 
   @autobind
   private _getErrorMessage(value: string): string {
-    return value.length > 0 ? '' : `Please enter a url.`;
+    return value.length > 0 ? '' : strings.NotificationUrlError;
   }
 
   @autobind
@@ -125,10 +126,9 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
         isOpen={enabled}
         type={PanelType.smallFixedFar}
         onDismiss={this.onCloseEditPanel}
-        headerText={`Add Subscription`}
-        closeButtonAriaLabel="Close"
+        headerText={strings.AddSubscription}
         onRenderFooterContent={this.onRenderFooterContent}>
-        <TextField label="Notification URL"
+        <TextField label={strings.NotificationUrl}
           value={notificationUrl}
           required={true}
           onGetErrorMessage={this._getErrorMessage}
@@ -136,22 +136,23 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
           onChanged={(newValue: string) => {
             this.onTextFieldChanged(newValue, "notificationUrl");
           }} />
-        <TextField label="Client State"
+        <TextField label={strings.ClientState}
           value={clientState}
           onChanged={(newValue: string) => {
             this.onTextFieldChanged(newValue, "clientState");
           }}
         />
         <DatePicker
-          label={"Expiration Date"}
+          label={strings.ExpirationDate}
           isRequired={true}
           firstDayOfWeek={DayOfWeek.Monday}
           strings={strings.DatePickerStrings}
-          placeholder="Select a date..."
+          placeholder={strings.SelectDate}
           minDate={this.minDate}
+          maxDate={this.maxDate}
           value={expirationDateTime}
           onSelectDate={this.onSelectDate} />
-        <DefaultButton onClick={this.onAddToDate}>Add 90 Days</DefaultButton>
+        <DefaultButton onClick={this.onAddToDate}>{strings.AddMaxExpiration}</DefaultButton>
       </Panel>
     );
   }

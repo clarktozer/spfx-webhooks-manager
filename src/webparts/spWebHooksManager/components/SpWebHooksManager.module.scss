@@ -106,4 +106,12 @@
     letter-spacing: 1px;
     font-size: 12px;
   }
+
+  .panelButtons {
+    button {
+      &:first-child {
+        margin-right: 8px;
+      }
+    }
+  }
 }

@@ -1,18 +1,22 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BaseDialog, IDialogConfiguration } from "@microsoft/sp-dialog";
-import { autobind } from '@uifabric/utilities/lib';
 import { ErrorDialogContent } from './ErrorDialogContent';
 
 export class ErrorDialog extends BaseDialog {
-  constructor(config?: IDialogConfiguration) {
+  private title: string;
+  private message: string;
+  constructor(title: string, message: string, config?: IDialogConfiguration) {
     super(config);
+    this.title = title;
+    this.message = message;
   }
 
   public render(): void {
     ReactDOM.render(
       <ErrorDialogContent
-        message={"an error has occurred"}
+        title={this.title}
+        message={this.message}
         close={this.close}
       />, this.domElement);
   }

@@ -5,6 +5,7 @@ import { ISubscriptionListItemState } from './ISubscriptionListItemState';
 import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPanel';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
+import * as strings from 'SpWebHooksManagerWebPartStrings';
 
 export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemState> {
   constructor(props: ISubscriptionListItemProps) {
@@ -54,45 +55,45 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
     return (
       <div className="subscriptionItem">
         <h4 className="subscriptionItemHeader clearfix">
-          Subscription
+          {strings.Subscription}
           <div className="fRight">
             <FabricIconButton
               stateKey="showEditPanel"
               fabricIconName="Edit"
               onClick={this.onTogglePanel}
-              tooltipText="Edit Subscription"
+              tooltipText={strings.EditSubscription}
             />
             <FabricIconButton
               stateKey="showDeletePanel"
               fabricIconName="ChromeClose"
               onClick={this.onTogglePanel}
-              tooltipText="Delete Subscription"
+              tooltipText={strings.DeleteSubscription}
             />
           </div>
         </h4>
         <ul className="listUnstyled">
           <li>
-            <label>ID</label>
+            <label>{strings.ID}</label>
             <div className="subscriptionProp">{subscription.id}</div>
           </li>
           <li>
-            <label>Expiration Date</label>
+            <label>{strings.ExpirationDate}</label>
             <div className="subscriptionProp">{subscription.expirationDateTime}</div>
           </li>
           <li>
-            <label>Resource</label>
+            <label>{strings.Resource}</label>
             <div className="subscriptionProp">{subscription.resource}</div>
           </li>
           <li>
-            <label>Notification URL</label>
+            <label>{strings.NotificationUrl}</label>
             <div className="subscriptionProp">{subscription.notificationUrl}</div>
           </li>
           <li>
-            <label>Client State</label>
+            <label>{strings.ClientState}</label>
             <div className="subscriptionProp">
               {
                 subscription.clientState != null && subscription.clientState.length > 0 ?
-                  subscription.clientState : "N/A"
+                  subscription.clientState : strings.EmptyTextField
               }
             </div>
           </li>
@@ -111,9 +112,9 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             <ConfirmDialog
               onSubmit={this.onDelete}
               onClose={this.closeDeleteDialog}
-              title="Delete Subscription"
-              message="Are you sure you want to delete this subscription?"
-              loadingMessage="Deleting subscription..."/>
+              title={strings.DeleteSubscription}
+              message={strings.ConfirmDelete}
+              loadingMessage={strings.DeletingSubscription}/>
             : null
         }
       </div>

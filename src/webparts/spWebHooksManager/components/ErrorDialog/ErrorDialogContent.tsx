@@ -9,13 +9,11 @@ export class ErrorDialogContent extends React.Component<IErrorDialogContentProps
 
   public render(): JSX.Element {
     return <DialogContent
-      title={"Error"}
+      title={this.props.title}
       subText={this.props.message}
-      onDismiss={this.props.close}
-      showCloseButton={true}
-    >
+      onDismiss={this.props.close}>
       <DialogFooter>
-        <DefaultButton text={"OK"} title={""} onClick={this.props.close} primary={true} />
+        <DefaultButton text={"OK"} onClick={this.props.close} primary={true} />
       </DialogFooter>
     </DialogContent>;
   }

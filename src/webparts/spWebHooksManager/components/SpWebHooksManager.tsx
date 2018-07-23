@@ -5,7 +5,7 @@ import { sp } from '@pnp/sp';
 import { IODataList, } from '@microsoft/sp-odata-types';
 import { autobind } from '@uifabric/utilities/lib';
 import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
-import { Subscription, SubscriptionAddResult } from '@pnp/sp/src/subscriptions';
+import { Subscription } from '@pnp/sp/src/subscriptions';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { Overlay } from "office-ui-fabric-react/lib/Overlay";
 import { IListSubscription } from '../interfaces/IListSubscription';
@@ -14,8 +14,8 @@ import { QueryType } from '../interfaces/QueryType';
 import { IAddSubscription } from './AddSubscriptionPanel/IAddSubscription';
 import SubscriptionsList from './SubscriptionList/SubscriptionsList';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-import { Dialog } from '@microsoft/sp-dialog';
 import { ErrorDialog } from './ErrorDialog/ErrorDialog';
+import * as strings from 'SpWebHooksManagerWebPartStrings';
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
   private batchLimit = 50;
@@ -98,14 +98,15 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   @autobind
   private async onDeleteWebHook(listId: string, subscriptionId: string): Promise<void> {
     try {
-      console.log("onDeleteWebHook", listId, subscriptionId);
-      await this.delay();
-      //await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).delete();
+      await sp.web.lists
+        .getById(listId)
+        .subscriptions
+        .getById(subscriptionId)
+        .delete();
       this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
-      throw "";
     } catch (e) {
-      let dialog = new ErrorDialog();
+      let dialog = new ErrorDialog(strings.DeleteErrorTitle, strings.ErrorDeletingMessage);
       dialog.show();
       this.setSubscriptionsLoading(false);
     }
@@ -114,13 +115,15 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   @autobind
   private async onAddWebHook(listId: string, subscription: IAddSubscription): Promise<void> {
     try {
-      console.log("onAddWebHook", listId, subscription);
-      //let added = await sp.web.lists.getById(listId).subscriptions.add(notificationUrl, expirationDate, clientState);
-      await this.delay();
+      await sp.web.lists
+        .getById(listId)
+        .subscriptions
+        .add(subscription.notificationUrl, subscription.expirationDateTime.toISOString(), subscription.clientState);
       this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
-      Dialog.alert("an error adding has occurred");
+      let dialog = new ErrorDialog(strings.AddErrorTitle, `${strings.ErrorAddingMessage} ${e.data.responseBody["odata.error"].message.value}`);
+      dialog.show();
       this.setSubscriptionsLoading(false);
     }
   }
@@ -128,25 +131,17 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
   @autobind
   private async onUpdateWebHook(listId: string, subscriptionId: string, expirationDate: string): Promise<void> {
     try {
-      console.log("onUpdateWebHook", listId, subscriptionId, expirationDate);
-      await this.delay();
-      //let updated = await sp.web.lists.getById(listId).subscriptions.getById(subscriptionId).update(expirationDate);
+      await sp.web.lists
+        .getById(listId)
+        .subscriptions.getById(subscriptionId)
+        .update(expirationDate);
       this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
-      throw "error";
     } catch (e) {
-      Dialog.alert("an error updating has occurred");
+      let dialog = new ErrorDialog(strings.UpdateErrorTitle, strings.ErrorUpdatingMessage);
+      dialog.show();
       this.setSubscriptionsLoading(false);
     }
-  }
-
-  @autobind
-  private delay() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 5000);
-    });
   }
 
   @autobind
@@ -188,19 +183,18 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
             {
               error ?
                 <MessageBar
-                  messageBarType={MessageBarType.error}
-                  dismissButtonAriaLabel="Close">
-                  There was an error fetching the web hook subscriptions
+                  messageBarType={MessageBarType.error}>
+                  {strings.ErrorFetchingSubscriptions}
                 </MessageBar>
                 :
                 null
             }
             <div className="listSubscriptions">
               {
-                listSubscriptions.map((e, i) => {
+                listSubscriptions.map((listSubscription, index) => {
                   return <SubscriptionsList
-                    key={`subscriptionList-${i}`}
-                    listSubscription={e}
+                    key={`subscriptionList-${index}`}
+                    listSubscription={listSubscription}
                     onAddSubscription={this.onAddWebHook}
                     onDeleteSubscription={this.onDeleteWebHook}
                     onUpdateSubscription={this.onUpdateWebHook}
@@ -211,7 +205,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
                 loadingSubscriptions ?
                   <div className="loader">
                     <Overlay className="loader__overlay">
-                      <Spinner className="loader__spinner" size={SpinnerSize.large} label={"Loading..."} />
+                      <Spinner className="loader__spinner" size={SpinnerSize.large} label={strings.Loading} />
                     </Overlay>
                   </div>
                   : null

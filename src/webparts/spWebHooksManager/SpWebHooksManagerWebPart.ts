@@ -4,7 +4,6 @@ import { Version } from '@microsoft/sp-core-library';
 import {
   BaseClientSideWebPart,
   IPropertyPaneConfiguration,
-  PropertyPaneCheckbox,
   IPropertyPaneDropdownOption,
   PropertyPaneDropdown,
   IPropertyPaneField
@@ -82,15 +81,15 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
 
     let queryGroup: IPropertyPaneField<any>[] = [
       PropertyPaneDropdown('queryType', {
-        label: "Select query type",
+        label: strings.SelectQueryType,
         options: [
           {
             key: "list",
-            text: "List"
+            text: strings.List
           },
           {
             key: "template",
-            text: "Template"
+            text: strings.Template
           }
         ]
       })
@@ -99,7 +98,7 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
     if (queryType == QueryType.LIST) {
       queryGroup.push(
         PropertyFieldListPicker('lists', {
-          label: 'Select a list',
+          label: strings.SelectList,
           selectedList: lists,
           includeHidden: false,
           orderBy: PropertyFieldListPickerOrderBy.Title,
@@ -116,7 +115,7 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
       queryGroup.push(
         PropertyFieldMultiSelect('listTemplateTypes', {
           key: 'listTemplateTypes',
-          label: "List Template Types",
+          label: strings.ListTemplateTypes,
           options: this.templateTypes,
           selectedKeys: listTemplateTypes
         })

@@ -7,6 +7,7 @@ import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { IConfirmDialogProps } from './IConfirmDialogProps';
 import { IConfirmDialogState } from './IConfirmDialogState';
+import * as strings from 'SpWebHooksManagerWebPartStrings';
 
 export default class ConfirmDialog extends React.Component<IConfirmDialogProps, IConfirmDialogState> {
   constructor(props: IConfirmDialogProps) {
@@ -50,8 +51,8 @@ export default class ConfirmDialog extends React.Component<IConfirmDialogProps, 
               <div><Spinner className="" size={SpinnerSize.large} label={loadingMessage} /></div>
               :
               <DialogFooter>
-                <DefaultButton disabled={this.state.loading} onClick={this.onSubmit} text="OK" primary={true} />
-                <DefaultButton onClick={this.props.onClose} text="Cancel" />
+                <DefaultButton disabled={this.state.loading} onClick={this.onSubmit} text={strings.OK} primary={true} />
+                <DefaultButton onClick={this.props.onClose} text={strings.Cancel} />
               </DialogFooter>
           }
         </Dialog>

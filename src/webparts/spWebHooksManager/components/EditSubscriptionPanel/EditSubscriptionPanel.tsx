@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
-import { Label } from 'office-ui-fabric-react/lib/Label';
 import { DatePicker, DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { autobind } from '@uifabric/utilities/lib';
@@ -12,13 +11,15 @@ import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 
 export default class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, IEditSubscriptionState> {
   private minDate: Date;
+  private maxDate: Date;
   constructor(props: IEditSubscriptionProps) {
     super(props);
 
     this.minDate = new Date(props.subscription.expirationDateTime);
+    this.maxDate = this.addDays(props.subscription.expirationDateTime, 90);
 
     this.state = {
-      expirationDateTime: new Date(props.subscription.expirationDateTime),
+      expirationDateTime: this.minDate,
       loading: false,
       error: false
     };
@@ -46,11 +47,9 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   }
 
   @autobind
-  private onAddToDate() {
-    let date = this.addDays(this.state.expirationDateTime.toISOString(), 90);
-
+  private onMaxDate() {
     this.setState({
-      expirationDateTime: date
+      expirationDateTime: this.maxDate
     });
   }
 
@@ -62,13 +61,11 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
       <div>
         {
           loading ?
-            <div><Spinner className="" size={SpinnerSize.large} label={"Updating subscription..."} /></div>
+            <Spinner size={SpinnerSize.large} label={strings.UpdatingSubscription} />
             :
-            <div>
-              <PrimaryButton disabled={error} onClick={this.onSave} style={{ marginRight: '8px' }}>
-                Save
-              </PrimaryButton>
-              <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
+            <div className="panelButtons">
+              <DefaultButton disabled={error} onClick={this.onSave} text={strings.Save} primary={true} />
+              <DefaultButton onClick={this.onCloseEditPanel} text={strings.Cancel}/>
             </div>
         }
       </div>
@@ -87,7 +84,7 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   @autobind
   private onError() {
     this.setState({
-      error: this.state.expirationDateTime == null
+      error: this.state.expirationDateTime == null && this.state.expirationDateTime > this.maxDate
     });
   }
 
@@ -100,31 +97,20 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
         isOpen={enabled}
         type={PanelType.smallFixedFar}
         onDismiss={this.onCloseEditPanel}
-        headerText={`Edit Subscription`}
-        closeButtonAriaLabel="Close"
+        headerText={strings.EditSubscription}
         onRenderFooterContent={this.onRenderFooterContent}>
-        <Label>ID</Label>
-        <TextField readOnly={true} value={subscription.id} />
-        <Label>Notification URL</Label>
-        <TextField readOnly={true} value={subscription.notificationUrl} />
-        <Label>Resource</Label>
-        <TextField readOnly={true} value={subscription.resource} />
-        <Label>Client State</Label>
-        <TextField readOnly={true}
-          value={subscription.clientState != null
-            && subscription.clientState.length > 0
-            ? subscription.clientState : "N/A"} />
-        <Label required={true}>Expiration Date</Label>
         <DatePicker
+          label={strings.ExpirationDate}
           firstDayOfWeek={DayOfWeek.Monday}
           isRequired={true}
           strings={strings.DatePickerStrings}
-          placeholder="Select a date..."
+          placeholder={strings.SelectDate}
           minDate={this.minDate}
+          maxDate={this.maxDate}
           allowTextInput={true}
           value={expirationDateTime}
           onSelectDate={this.onSelectDate} />
-        <DefaultButton onClick={this.onAddToDate}>Add 90 Days</DefaultButton>
+        <DefaultButton onClick={this.onMaxDate}>{strings.AddMaxExpiration}</DefaultButton>
       </Panel>
     );
   }
