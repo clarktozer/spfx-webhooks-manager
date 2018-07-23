@@ -2,7 +2,6 @@ import * as React from 'react';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DatePicker, DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
-import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { autobind } from '@uifabric/utilities/lib';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import { IEditSubscriptionProps } from './IEditSubscriptionProps';
@@ -89,7 +88,7 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   }
 
   public render(): React.ReactElement<IEditSubscriptionProps> {
-    const { subscription, enabled } = this.props;
+    const { enabled } = this.props;
     const { expirationDateTime } = this.state;
 
     return (
