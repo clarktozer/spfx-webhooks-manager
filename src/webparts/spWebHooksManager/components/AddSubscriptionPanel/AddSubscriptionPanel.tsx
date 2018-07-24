@@ -9,6 +9,7 @@ import { IAddSubscriptionProps } from './IAddSubscriptionProps';
 import { IAddSubscriptionState } from './IAddSubscriptionState';
 import { IAddSubscription } from './IAddSubscription';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
+import styles from '../SpWebHooksManager.module.scss';
 
 export default class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, IAddSubscriptionState> {
   private minDate: Date;
@@ -57,9 +58,9 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
   }
 
   @autobind
-  private onAddToDate() {
+  private onMaxDate() {
     this.setState({
-      expirationDateTime: this.addDays(this.state.expirationDateTime.toISOString(), 90)
+      expirationDateTime: this.maxDate
     });
   }
 
@@ -73,7 +74,7 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
           loading ?
             <Spinner size={SpinnerSize.large} label={strings.AddingSubscription} />
             :
-            <div  className="panelButtons">
+            <div className={styles.panelButtons}>
               <DefaultButton disabled={error} onClick={this.onSave} text={strings.Save} primary={true} />
               <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
             </div>
@@ -152,7 +153,7 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
           maxDate={this.maxDate}
           value={expirationDateTime}
           onSelectDate={this.onSelectDate} />
-        <DefaultButton onClick={this.onAddToDate}>{strings.AddMaxExpiration}</DefaultButton>
+        <DefaultButton onClick={this.onMaxDate}>{strings.AddMaxExpiration}</DefaultButton>
       </Panel>
     );
   }

@@ -16,6 +16,7 @@ import SubscriptionsList from './SubscriptionList/SubscriptionsList';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { ErrorDialog } from './ErrorDialog/ErrorDialog';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
+import TimedMessageBar from './TimedMessageBar/TimedMessageBar';
 
 export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
   private batchLimit = 50;
@@ -103,6 +104,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         .subscriptions
         .getById(subscriptionId)
         .delete();
+      //display timed message bar success message
       this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
@@ -119,6 +121,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         .getById(listId)
         .subscriptions
         .add(subscription.notificationUrl, subscription.expirationDateTime.toISOString(), subscription.clientState);
+      //display timed message bar success message
       this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
@@ -135,6 +138,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         .getById(listId)
         .subscriptions.getById(subscriptionId)
         .update(expirationDate);
+      //display timed message bar success message
       this.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
@@ -189,7 +193,7 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
                 :
                 null
             }
-            <div className="listSubscriptions">
+            <div className={styles.listSubscriptions}>
               {
                 listSubscriptions.map((listSubscription, index) => {
                   return <SubscriptionsList
@@ -203,11 +207,9 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
               }
               {
                 loadingSubscriptions ?
-                  <div className="loader">
-                    <Overlay className="loader__overlay">
-                      <Spinner className="loader__spinner" size={SpinnerSize.large} label={strings.Loading} />
-                    </Overlay>
-                  </div>
+                  <Overlay className={styles.loaderOverlay}>
+                    <Spinner className={styles.loaderSpinner} size={SpinnerSize.large} label={strings.Loading} />
+                  </Overlay>
                   : null
               }
             </div>

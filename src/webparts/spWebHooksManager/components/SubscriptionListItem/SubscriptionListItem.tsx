@@ -6,6 +6,7 @@ import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPane
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
+import styles from './../SpWebHooksManager.module.scss';
 
 export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemState> {
   constructor(props: ISubscriptionListItemProps) {
@@ -53,10 +54,10 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
     const { showEditPanel, showDeletePanel } = this.state;
 
     return (
-      <div className="subscriptionItem">
-        <h4 className="subscriptionItemHeader clearfix">
+      <div className={styles.subscriptionItem}>
+        <h4 className={`${styles.subscriptionItemHeader} ${styles.clearfix}`}>
           {strings.Subscription}
-          <div className="fRight">
+          <div className={styles.pullRight}>
             <FabricIconButton
               stateKey="showEditPanel"
               fabricIconName="Edit"
@@ -71,26 +72,26 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             />
           </div>
         </h4>
-        <ul className="listUnstyled">
+        <ul className={styles.listUnstyled}>
           <li>
             <label>{strings.ID}</label>
-            <div className="subscriptionProp">{subscription.id}</div>
+            <div className={styles.subscriptionProp}>{subscription.id}</div>
           </li>
           <li>
             <label>{strings.ExpirationDate}</label>
-            <div className="subscriptionProp">{subscription.expirationDateTime}</div>
+            <div className={styles.subscriptionProp}>{subscription.expirationDateTime}</div>
           </li>
           <li>
             <label>{strings.Resource}</label>
-            <div className="subscriptionProp">{subscription.resource}</div>
+            <div className={styles.subscriptionProp}>{subscription.resource}</div>
           </li>
           <li>
             <label>{strings.NotificationUrl}</label>
-            <div className="subscriptionProp">{subscription.notificationUrl}</div>
+            <div className={styles.subscriptionProp}>{subscription.notificationUrl}</div>
           </li>
           <li>
             <label>{strings.ClientState}</label>
-            <div className="subscriptionProp">
+            <div className={styles.subscriptionProp}>
               {
                 subscription.clientState != null && subscription.clientState.length > 0 ?
                   subscription.clientState : strings.EmptyTextField

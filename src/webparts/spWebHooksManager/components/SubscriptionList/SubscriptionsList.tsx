@@ -7,6 +7,7 @@ import SubscriptionListItem from '../SubscriptionListItem/SubscriptionListItem';
 import AddSubscriptionPanel from '../AddSubscriptionPanel/AddSubscriptionPanel';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
+import styles from '../SpWebHooksManager.module.scss';
 
 export default class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscriptionListState> {
   constructor(props: ISubscriptionListProps) {
@@ -63,9 +64,9 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
 
     return (
       <div key={listSubscription.list.Id}>
-        <h3 className="subscriptionListHeader">
+        <h3 className={styles.subscriptionListHeader}>
           <FabricIconButton
-            fabricIconName={onExpanded ? "ChevronUp rotate" : "ChevronUp rotate down"}
+            fabricIconName={onExpanded ? `ChevronUp ${styles.rotate}` : `ChevronUp ${styles.rotate} ${styles.down}`}
             onClick={this.onToggleExpand}
             tooltipText={onExpanded ? strings.HideSubscriptions : strings.ExpandSubscriptions}
           />
@@ -74,23 +75,23 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
             onClick={this.onEnablePanel}
             tooltipText={strings.AddSubscription}
           />
-          <span className="title">{listSubscription.list.Title} ({listSubscription.subscriptions.length})</span>
+          <span className={styles.title}>{listSubscription.list.Title} ({listSubscription.subscriptions.length})</span>
         </h3>
         {
           onExpanded ?
-            <div className="subscriptions">
+            <div>
               {
                 listSubscription.subscriptions.length > 0 ?
-                  listSubscription.subscriptions.map((s) => {
+                  listSubscription.subscriptions.map((subscription) => {
                     return <SubscriptionListItem
-                    key={s.id}
-                      subscription={s}
+                      key={subscription.id}
+                      subscription={subscription}
                       onDeleteSubscription={this.onDelete}
                       onUpdateSubscription={this.onUpdate}
                     />;
                   })
                   :
-                  <div className="noSubscriptions">{strings.NoSubscriptions}</div>
+                  <div className={styles.noSubscriptions}>{strings.NoSubscriptions}</div>
               }
             </div>
             : null

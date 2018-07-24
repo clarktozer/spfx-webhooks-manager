@@ -2,6 +2,7 @@ import * as React from 'react';
 import { IFabricIconButtonProps } from './IFabricIconButtonProps';
 import { autobind } from '@uifabric/utilities/lib';
 import { TooltipHost, TooltipDelay } from 'office-ui-fabric-react/lib/Tooltip';
+import styles from '../SpWebHooksManager.module.scss';
 
 export default class FabricIconButton extends React.Component<IFabricIconButtonProps, {}> {
   constructor(props: IFabricIconButtonProps) {
@@ -18,9 +19,9 @@ export default class FabricIconButton extends React.Component<IFabricIconButtonP
 
     return (
       <TooltipHost content={tooltipText} delay={TooltipDelay.long}>
-        <div className="fabricIconContainer">
-          <div className="fabricIconCircle"></div>
-          <div className="fabricIcon" onClick={this.onClick} data-key={stateKey}>
+        <div className={styles.fabricIconContainer}>
+          <div className={styles.fabricIconCircle}></div>
+          <div className={styles.fabricIcon} onClick={this.onClick} data-key={stateKey}>
             <i className={`ms-Icon ms-Icon--${fabricIconName}`} aria-hidden="true"></i>
           </div>
         </div>

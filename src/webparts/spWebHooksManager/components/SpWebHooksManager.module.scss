@@ -1,20 +1,8 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 .spWebHooksManager {
   font-size: normal;
-}
-
-:global {
-  .fRight {
+  .pullRight {
     float: right;
-  }
-  .loader__overlay {
-    z-index: 2;
-    background-color: rgba(255, 255, 255, .6);
-  }
-  .loader__spinner {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
   }
   .listSubscriptions {
     min-height: 100px;
@@ -47,6 +35,16 @@
       line-height: 30px;
       width: 30px;
       text-align: center;
+      .rotate {
+        -moz-transition: all 0.3s ease-out;
+        -webkit-transition: all 0.3s ease-out;
+        transition: all 0.3s ease-out;
+      }
+      .rotate.down {
+        -moz-transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
     }
   }
   .clearfix {
@@ -86,18 +84,15 @@
       padding-top: 2px;
     }
   }
-
-  .ms-Icon.rotate {
-    -moz-transition: all 0.3s ease-out;
-    -webkit-transition: all 0.3s ease-out;
-    transition: all 0.3s ease-out;
+  .loaderOverlay {
+    z-index: 2;
+    background-color: rgba(255, 255, 255, .6);
   }
-  .ms-Icon.rotate.down {
-    -moz-transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
-    transform: rotate(180deg);
+  .loaderSpinner {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
   }
-
   .noSubscriptions {
     border: 1px solid;
     padding: 10px;
@@ -106,7 +101,6 @@
     letter-spacing: 1px;
     font-size: 12px;
   }
-
   .panelButtons {
     button {
       &:first-child {

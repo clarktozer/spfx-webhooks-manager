@@ -48,7 +48,7 @@ export default class ConfirmDialog extends React.Component<IConfirmDialogProps, 
           }}>
           {
             this.state.loading ?
-              <div><Spinner className="" size={SpinnerSize.large} label={loadingMessage} /></div>
+              <div><Spinner size={SpinnerSize.large} label={loadingMessage} /></div>
               :
               <DialogFooter>
                 <DefaultButton disabled={this.state.loading} onClick={this.onSubmit} text={strings.OK} primary={true} />

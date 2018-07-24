@@ -9,15 +9,15 @@ export default class TimedMessageBar extends React.Component<ITimedMessageBarPro
 
     this.state = {
       hidden: false
-    }
+    };
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     setTimeout(() => {
       this.setState({
         hidden: true
-      })
-    }, this.props.delay)
+      });
+    }, this.props.delay);
   }
 
   public render(): React.ReactElement<ITimedMessageBarProps> {
@@ -31,6 +31,6 @@ export default class TimedMessageBar extends React.Component<ITimedMessageBarPro
           {text}
         </MessageBar>
         : null
-    )
+    );
   }
 }

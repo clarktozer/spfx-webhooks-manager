@@ -7,6 +7,7 @@ import * as strings from 'SpWebHooksManagerWebPartStrings';
 import { IEditSubscriptionProps } from './IEditSubscriptionProps';
 import { IEditSubscriptionState } from './IEditSubscriptionState';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
+import styles from '../SpWebHooksManager.module.scss';
 
 export default class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, IEditSubscriptionState> {
   private minDate: Date;
@@ -62,7 +63,7 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
           loading ?
             <Spinner size={SpinnerSize.large} label={strings.UpdatingSubscription} />
             :
-            <div className="panelButtons">
+            <div className={styles.panelButtons}>
               <DefaultButton disabled={error} onClick={this.onSave} text={strings.Save} primary={true} />
               <DefaultButton onClick={this.onCloseEditPanel} text={strings.Cancel}/>
             </div>
