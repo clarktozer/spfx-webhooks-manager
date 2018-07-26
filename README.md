@@ -36,6 +36,8 @@ Deploy the app to the SharePoint app catalog.
 
 Create a webpart page and add the webpart. The files to run the webpart will be served from localhost.
 
+You will also need to change the JSOM external urls in the config.json to be your site collection.
+
 ```bash
 gulp clean
 gulp serve --nobrowser
