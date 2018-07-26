@@ -2,8 +2,8 @@
 
 SharePoint framework webpart for managing webhooks for a site
 
-## Status
-In progress
+![Webhooks Manager](./demo.gif)
+
 
 ### Building the code
 
@@ -22,8 +22,21 @@ This package produces the following:
 
 ### Build options
 
+```bash
 gulp clean
 gulp test
 gulp serve
 gulp bundle
 gulp package-solution
+```
+
+### Run from localhost
+
+Deploy the app to the SharePoint app catalog.
+
+Create a webpart page and add the webpart. The files to run the webpart will be served from localhost.
+
+```bash
+gulp clean
+gulp serve --nobrowser
+```
