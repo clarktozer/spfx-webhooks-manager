@@ -32,7 +32,8 @@
     "i": "^0.3.6",
     "lodash.startcase": "^4.4.0",
     "react": "15.6.2",
-    "react-dom": "15.6.2"
+    "react-dom": "15.6.2",
+    "react-redux": "^5.0.7"
   },
   "devDependencies": {
     "@microsoft/sp-build-web": "1.5.1",

@@ -6,7 +6,7 @@ import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPane
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
-import styles from './../SpWebHooksManager.module.scss';
+import styles from '../SpWebHooksManager.module.scss';
 
 export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemState> {
   constructor(props: ISubscriptionListItemProps) {

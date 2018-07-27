@@ -6,7 +6,8 @@ import {
   IPropertyPaneConfiguration,
   IPropertyPaneDropdownOption,
   PropertyPaneDropdown,
-  IPropertyPaneField
+  IPropertyPaneField,
+  PropertyPaneTextField
 } from '@microsoft/sp-webpart-base';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import SpWebHooksManager from './components/SpWebHooksManager';
@@ -22,32 +23,57 @@ require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
 
+import { applyProperties, updateProperty } from './reducers/webpart';
+import { createStore, IState } from './store';
+import { Store } from 'redux';
+import { Provider } from 'react-redux';
+import { IReactReduxWebPartProps } from './IReactReduxWebPartProps';
+import { autobind } from '@uifabric/utilities/lib';
+
 export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpWebHooksManagerWebPartProps> {
   private templateTypes: IPropertyPaneDropdownOption[];
+  private store: Store<IState>;
+
+  public constructor() {
+    super();
+
+    this.store = createStore();
+  }
 
   public render(): void {
-    const element: React.ReactElement<ISpWebHooksManagerProps> = React.createElement(
-      SpWebHooksManager,
-      {
-        listTemplateTypes: this.properties.listTemplateTypes,
-        displayMode: this.displayMode,
-        updateProperty: (value: string) => {
-          this.properties.title = value;
-        },
-        title: this.properties.title,
-        queryType: this.properties.queryType,
-        lists: this.properties.lists
-      }
+    if (this.renderedOnce) { return; }
+
+    const element = (
+      <Provider store={this.store}>
+        <SpWebHooksManager updateWebPartProp={this.updateWebPartProp} />
+      </Provider>
     );
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected get disableReactivePropertyChanges(): boolean {
-    return true;
+  @autobind
+  private updateWebPartProp (key: string, value: string) {
+    this.properties[key] = value;
+  }
+
+  protected get disableReactivePropertyChanges() {
+    return false;
+  }
+
+  protected onPropertyPaneFieldChanged(propertyPath, oldValue, newValue) {
+    if (!this.disableReactivePropertyChanges) {
+      this.store.dispatch(updateProperty(propertyPath, newValue));
+    }
+  }
+
+  protected onAfterPropertyPaneChangesApplied() {
+    this.applyWebpartProps();
   }
 
   protected onInit(): Promise<void> {
+    this.applyWebpartProps();
+
     this.templateTypes = Object.keys(SP.ListTemplateType)
       .filter(key => !isNaN(parseInt(SP.ListTemplateType[key])))
       .map((e) => {
@@ -62,6 +88,15 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
         spfxContext: this.context
       });
     });
+  }
+
+  private applyWebpartProps() {
+    this.store.dispatch(applyProperties({
+      ...this.properties,
+      displayMode: this.displayMode,
+      listSubscriptions: [],
+      loadingSubscriptions: false
+    }));
   }
 
   protected onDispose(): void {

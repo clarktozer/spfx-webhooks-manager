@@ -22,8 +22,6 @@
     "properties": {
       "title": "Web Hooks Manager",
       "listTemplateTypes": ["genericList"],
-      "includeHiddenLists": false,
-      "includePrivateLists": false,
       "lists": [],
       "queryType": "template"
     }

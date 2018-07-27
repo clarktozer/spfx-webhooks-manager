@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './SpWebHooksManager.module.scss';
-import { ISpWebHooksManagerProps } from './ISpWebHooksManagerProps';
+import { ISpWebHooksManagerProps, IConnectedDispatch, IConnectedProps, IProp } from './ISpWebHooksManagerProps';
 import { sp } from '@pnp/sp';
 import { IODataList, } from '@microsoft/sp-odata-types';
 import { autobind } from '@uifabric/utilities/lib';
@@ -16,46 +16,33 @@ import SubscriptionsList from './SubscriptionList/SubscriptionsList';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { ErrorDialog } from './ErrorDialog/ErrorDialog';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
-import TimedMessageBar from './TimedMessageBar/TimedMessageBar';
+import { connect } from 'react-redux';
+import { IState } from '../reducers';
+import { updateProperty } from '../reducers/webpart';
+import { Dispatch } from 'redux';
+import WebPartTitleWrapper from './WebPartTitle/WebPartTitle';
 
-export default class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, ISpWebHooksManagerState> {
+class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps & IProp & IConnectedProps & IConnectedDispatch, {}> {
   private batchLimit = 50;
 
-  constructor(props: ISpWebHooksManagerProps) {
+  constructor(props: ISpWebHooksManagerProps & IProp & IConnectedProps & IConnectedDispatch) {
     super(props);
-
-    this.state = {
-      listSubscriptions: [],
-      loadingSubscriptions: true
-    };
-  }
-
-  @autobind
-  private setSubscriptionsLoading(loading: boolean) {
-    this.setState({
-      loadingSubscriptions: loading
-    });
-  }
-
-  @autobind
-  private setError() {
-    this.setState({
-      loadingSubscriptions: false,
-      error: true
-    });
   }
 
   @autobind
   private async refreshSubscriptions() {
     try {
       let listSubscriptions = await this.getSubscriptions();
-      this.setState({
-        listSubscriptions: listSubscriptions,
-        loadingSubscriptions: false,
-        error: false
-      });
+      this.props.setSubscriptions(listSubscriptions);
+
+      this.props.setSubscriptionsLoading(false);
+      // this.setState({
+      //   listSubscriptions: listSubscriptions,
+      //   loadingSubscriptions: false,
+      //   error: false
+      // });
     } catch (e) {
-      this.setError();
+      this.props.setError();
     }
   }
 
@@ -63,11 +50,11 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
     this.refreshSubscriptions();
   }
 
-  public async componentDidUpdate(prevProps: ISpWebHooksManagerProps) {
+  public async componentDidUpdate(prevProps: ISpWebHooksManagerProps & IProp & IConnectedProps & IConnectedDispatch) {
     if (prevProps.listTemplateTypes !== this.props.listTemplateTypes
       || prevProps.queryType !== this.props.queryType
       || prevProps.lists !== this.props.lists) {
-      this.setSubscriptionsLoading(true);
+      this.props.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     }
   }
@@ -104,13 +91,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         .subscriptions
         .getById(subscriptionId)
         .delete();
-      //display timed message bar success message
-      this.setSubscriptionsLoading(true);
+      this.props.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
       let dialog = new ErrorDialog(strings.DeleteErrorTitle, strings.ErrorDeletingMessage);
       dialog.show();
-      this.setSubscriptionsLoading(false);
+      this.props.setSubscriptionsLoading(false);
     }
   }
 
@@ -121,13 +107,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         .getById(listId)
         .subscriptions
         .add(subscription.notificationUrl, subscription.expirationDateTime.toISOString(), subscription.clientState);
-      //display timed message bar success message
-      this.setSubscriptionsLoading(true);
+      this.props.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
       let dialog = new ErrorDialog(strings.AddErrorTitle, `${strings.ErrorAddingMessage} ${e.data.responseBody["odata.error"].message.value}`);
       dialog.show();
-      this.setSubscriptionsLoading(false);
+      this.props.setSubscriptionsLoading(false);
     }
   }
 
@@ -138,13 +123,12 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
         .getById(listId)
         .subscriptions.getById(subscriptionId)
         .update(expirationDate);
-      //display timed message bar success message
-      this.setSubscriptionsLoading(true);
+      this.props.setSubscriptionsLoading(true);
       this.refreshSubscriptions();
     } catch (e) {
       let dialog = new ErrorDialog(strings.UpdateErrorTitle, strings.ErrorUpdatingMessage);
       dialog.show();
-      this.setSubscriptionsLoading(false);
+      this.props.setSubscriptionsLoading(false);
     }
   }
 
@@ -173,17 +157,24 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
     return Promise.all(promises);
   }
 
-  public render(): React.ReactElement<ISpWebHooksManagerProps> {
-    const { updateProperty, title, displayMode } = this.props;
-    const { listSubscriptions, error, loadingSubscriptions } = this.state;
+  @autobind
+  private setTitle(key: string, value: string) {
+    this.props.updateProperty(value);
+    this.props.updateWebPartProp(key, value);
+  }
+
+  public render(): React.ReactElement<ISpWebHooksManagerProps & IProp & IConnectedProps & IConnectedDispatch> {
+    const { title, displayMode, error, listSubscriptions, loadingSubscriptions } = this.props;
 
     return (
       <div className={styles.spWebHooksManager}>
         <div className="ms-Grid-row">
           <div className="ms-Grid-col ms-sm12">
-            <WebPartTitle displayMode={displayMode}
+            <WebPartTitleWrapper
+              propertyKey={"title"}
+              displayMode={displayMode}
               title={title}
-              updateProperty={updateProperty} />
+              updateTitle={this.setTitle} />
             {
               error ?
                 <MessageBar
@@ -219,3 +210,24 @@ export default class SpWebHooksManager extends React.Component<ISpWebHooksManage
     );
   }
 }
+
+const mapStateToProps = (state: IState) => ({
+  title: state.webpart.properties.title,
+  listTemplateTypes: state.webpart.properties.listTemplateTypes,
+  lists: state.webpart.properties.lists,
+  queryType: state.webpart.properties.queryType,
+  displayMode: state.webpart.properties.displayMode,
+  listSubscriptions: state.webpart.properties.listSubscriptions,
+  loadingSubscriptions: state.webpart.properties.loadingSubscriptions
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  updateProperty: (value: string) => {
+    dispatch(updateProperty("title", value));
+  },
+  setSubscriptionsLoading: (loading: boolean) => dispatch(updateProperty("loadingSubscriptions", loading)),
+  setError: () => dispatch(updateProperty("error", true)),
+  setSubscriptions: (listSubscriptions: IListSubscription[]) => dispatch(updateProperty("listSubscriptions", listSubscriptions))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(SpWebHooksManager);
