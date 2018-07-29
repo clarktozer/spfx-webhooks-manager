@@ -8,25 +8,20 @@ import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import styles from '../SpWebHooksManager.module.scss';
 
-export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemState> {
+export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, {}> {
   constructor(props: ISubscriptionListItemProps) {
     super(props);
-
-    this.state = {
-      showEditPanel: false,
-      showDeletePanel: false
-    };
   }
 
-  @autobind
-  private async onDelete() {
-    await this.props.onDeleteSubscription(this.props.subscription.id);
-  }
+  // @autobind
+  // private async onDelete() {
+  //   await this.props.onDeleteSubscription(this.props.subscription.id);
+  // }
 
-  @autobind
-  private async onUpdate(expirationDateTime: string): Promise<void> {
-    await this.props.onUpdateSubscription(this.props.subscription.id, expirationDateTime);
-  }
+  // @autobind
+  // private async onUpdate(expirationDateTime: string): Promise<void> {
+  //   await this.props.onUpdateSubscription(this.props.subscription.id, expirationDateTime);
+  // }
 
   @autobind
   private onTogglePanel(key: string) {
@@ -35,23 +30,9 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
     }));
   }
 
-  @autobind
-  private closeDeleteDialog() {
-    this.setState({
-      showDeletePanel: false
-    });
-  }
-
-  @autobind
-  private closeEditPanel() {
-    this.setState({
-      showEditPanel: false
-    });
-  }
-
   public render(): React.ReactElement<ISubscriptionListItemProps> {
     const { subscription } = this.props;
-    const { showEditPanel, showDeletePanel } = this.state;
+    // const { showEditPanel, showDeletePanel } = this.state;
 
     return (
       <div className={styles.subscriptionItem}>
@@ -99,16 +80,9 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             </div>
           </li>
         </ul>
-        {
-          showEditPanel ?
-            <EditSubscriptionPanel
-              enabled={showEditPanel}
-              subscription={subscription}
-              onClosePanel={this.closeEditPanel}
-              onUpdate={this.onUpdate} />
-            : null
-        }
-        {
+        {/* <EditSubscriptionPanel /> */}
+
+        {/* {
           showDeletePanel ?
             <ConfirmDialog
               onSubmit={this.onDelete}
@@ -117,7 +91,7 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
               message={strings.ConfirmDelete}
               loadingMessage={strings.DeletingSubscription}/>
             : null
-        }
+        } */}
       </div>
     );
   }

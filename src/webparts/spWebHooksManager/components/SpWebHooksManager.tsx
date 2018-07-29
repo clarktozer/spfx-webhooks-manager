@@ -8,7 +8,7 @@ import * as strings from 'SpWebHooksManagerWebPartStrings';
 import { connect } from 'react-redux';
 import { IState } from '../reducers';
 import WebPartTitleWrapper from './WebPartTitle/WebPartTitle';
-import { updateProperty } from '../actions/subscriptions';
+import { onUpdateProperty, onGetSubscriptions } from '../actions/GetSubscriptions';
 import ErrorDialog from './ErrorDialog/ErrorDialog';
 import { ISpWebHooksManagerProps } from './ISpWebHooksManagerProps';
 
@@ -18,18 +18,15 @@ class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, {}> {
     super(props);
   }
 
-  @autobind
-  private async refreshSubscriptions() {
-
-  }
-
   public async componentDidMount() {
-    this.refreshSubscriptions();
+    this.props.getSubscriptions();
   }
 
   public async componentDidUpdate(prevProps: ISpWebHooksManagerProps) {
-    if (prevProps !== this.props) {
-      this.refreshSubscriptions();
+    if (prevProps.listTemplateTypes !== this.props.listTemplateTypes
+      || prevProps.queryType !== this.props.queryType
+      || prevProps.lists !== this.props.lists) {
+        this.props.getSubscriptions();
     }
   }
 
@@ -57,9 +54,6 @@ class SpWebHooksManager extends React.Component<ISpWebHooksManagerProps, {}> {
                   return <SubscriptionsList
                     key={`subscriptionList-${index}`}
                     listSubscription={listSubscription}
-                    // onAddSubscription={this.onAddWebHook}
-                    // onDeleteSubscription={this.onDeleteWebHook}
-                    // onUpdateSubscription={this.onUpdateWebHook}
                   />;
                 })
               }
@@ -89,7 +83,8 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  updateProperty: (key: string, value: string) => dispatch(updateProperty(key, value))
-})
+  updateProperty: (key: string, value: string) => dispatch(onUpdateProperty(key, value)),
+  getSubscriptions: () => dispatch(onGetSubscriptions())
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpWebHooksManager);

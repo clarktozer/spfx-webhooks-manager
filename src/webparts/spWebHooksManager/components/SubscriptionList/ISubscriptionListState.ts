@@ -1,4 +1,3 @@
-export interface ISubscriptionListState {
+export interface ISubscriptionListInternalState {
   onExpanded: boolean;
-  showAddPanel: boolean;
 }

@@ -1,7 +1,7 @@
 import { combineReducers, Reducer } from 'redux';
-import { subscriptions } from './Subscriptions';
+import subscription from './GetSubscriptions';
 import { IWebpartState } from '../components/ISpWebHooksManagerProps';
-import { addSubscription } from './Addsubscription';
+import { addSubscription } from './NewSubscription';
 import { IAddSubscriptionState } from '../components/AddSubscriptionPanel/IAddSubscriptionState';
 
 export interface IState {
@@ -10,6 +10,6 @@ export interface IState {
 }
 
 export const rootReducer: Reducer<IState> = combineReducers<IState>({
-  webpart: subscriptions,
+  webpart: subscription,
   subscription: addSubscription
 });

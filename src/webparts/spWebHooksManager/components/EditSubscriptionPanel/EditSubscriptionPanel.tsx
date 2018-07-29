@@ -12,6 +12,7 @@ import styles from '../SpWebHooksManager.module.scss';
 export default class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, IEditSubscriptionState> {
   private minDate: Date;
   private maxDate: Date;
+
   constructor(props: IEditSubscriptionProps) {
     super(props);
 

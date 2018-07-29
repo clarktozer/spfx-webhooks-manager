@@ -19,7 +19,8 @@ import { QueryType } from './interfaces/QueryType';
 import { createStore, IState } from './store';
 import { Store } from 'redux';
 import { Provider } from 'react-redux';
-import { updateProperty, applyProperties } from './actions/subscriptions';
+import { onUpdateProperty, onApplyProperties } from './actions/GetSubscriptions';
+
 require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
@@ -48,7 +49,7 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
       let state = this.store.getState();
       let title = state.webpart.title;
       this.properties["title"] = title;
-    })
+    });
 
     ReactDom.render(element, this.domElement);
   }
@@ -59,7 +60,7 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
 
   protected onPropertyPaneFieldChanged(propertyPath, newValue) {
     if (!this.disableReactivePropertyChanges) {
-      this.store.dispatch(updateProperty(propertyPath, newValue));
+      this.store.dispatch(onUpdateProperty(propertyPath, newValue));
     }
   }
 
@@ -87,7 +88,7 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
   }
 
   private applyWebpartProps() {
-    this.store.dispatch(applyProperties({
+    this.store.dispatch(onApplyProperties({
       ...this.properties,
       displayMode: this.displayMode,
       listSubscriptions: [],

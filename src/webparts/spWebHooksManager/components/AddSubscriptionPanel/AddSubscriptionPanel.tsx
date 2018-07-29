@@ -5,12 +5,13 @@ import { DatePicker, DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { autobind } from '@uifabric/utilities/lib';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
-import { IAddSubscriptionProps } from './IAddSubscriptionState';
+import { IAddSubscriptionProps, IAddSubscriptionDispatch } from './IAddSubscriptionState';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import styles from '../SpWebHooksManager.module.scss';
 import { connect } from 'react-redux';
 import { IState } from '../../store';
-import { updateProperty } from '../../actions/AddSubscription';
+import { onUpdateProperty, onAddingSubscription, onAddSubscription, onValidated, onCancel } from '../../actions/NewSubscription';
+import { IAddSubscription } from './IAddSubscription';
 
 class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
   private minDate: Date;
@@ -20,11 +21,13 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
     super(props);
   }
 
-  componentDidMount() {
-    let currentDate = new Date();
-    this.minDate = this.addDays(currentDate.toISOString(), 1);
-    this.maxDate = this.addDays(currentDate.toISOString(), 90);
-    this.props.updateProperty("expirationDateTime", this.minDate);
+  public componentWillReceiveProps(nextProps: IAddSubscriptionProps) {
+    if (nextProps.expirationDateTime == null) {
+      let currentDate = new Date();
+      this.minDate = this.addDays(currentDate.toISOString(), 1);
+      this.maxDate = this.addDays(currentDate.toISOString(), 90);
+      this.props.onUpdateProperty("expirationDateTime", this.minDate);
+    }
   }
 
   @autobind
@@ -35,14 +38,13 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
   }
 
   @autobind
-  private onCloseEditPanel() {
-    this.props.updateProperty("enabled", false);
+  private onCancel() {
+    this.props.onCancel();
   }
 
   @autobind
   private async onSave() {
-    this.props.addingSubscription(true);
-    this.props.addSubscription({
+    this.props.onAddSubscription(this.props.listId, {
       expirationDateTime: this.props.expirationDateTime,
       notificationUrl: this.props.notificationUrl,
       clientState: this.props.clientState
@@ -51,7 +53,7 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
 
   @autobind
   private onRenderFooterContent() {
-    const { error, loading } = this.props;
+    const { validated, loading } = this.props;
 
     return (
       <div>
@@ -60,8 +62,8 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
             <Spinner size={SpinnerSize.large} label={strings.AddingSubscription} />
             :
             <div className={styles.panelButtons}>
-              <DefaultButton disabled={error} onClick={this.onSave} text={strings.Save} primary={true} />
-              <DefaultButton onClick={this.onCloseEditPanel}>Cancel</DefaultButton>
+              <DefaultButton disabled={!validated} onClick={this.onSave} text={strings.Save} primary={true} />
+              <DefaultButton onClick={this.onCancel}>Cancel</DefaultButton>
             </div>
         }
       </div>
@@ -75,15 +77,15 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
 
   @autobind
   private onSelectDate(date: Date) {
-    this.props.updateProperty("expirationDateTime", date);
+    this.props.onUpdateProperty("expirationDateTime", date);
     this.onError();
   }
 
   @autobind
   private onError() {
-    this.props.updateProperty("error", this.props.expirationDateTime == null
-      || this.props.notificationUrl == null
-      || this.props.notificationUrl.length == 0);
+    this.props.onValidated(this.props.expirationDateTime != null
+      && this.props.notificationUrl != null
+      && this.props.notificationUrl.length > 0);
   }
 
   @autobind
@@ -103,7 +105,7 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
       <Panel
         isOpen={enabled}
         type={PanelType.smallFixedFar}
-        onDismiss={this.onCloseEditPanel}
+        onDismiss={this.onCancel}
         headerText={strings.AddSubscription}
         onRenderFooterContent={this.onRenderFooterContent}>
         <TextField label={strings.NotificationUrl}
@@ -112,12 +114,12 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
           onGetErrorMessage={this._getErrorMessage}
           onNotifyValidationResult={this.NotifyErrorResult}
           onChanged={(value: string) => {
-            this.props.updateProperty("notificationUrl", value);
+            this.props.onUpdateProperty("notificationUrl", value);
           }} />
         <TextField label={strings.ClientState}
           value={clientState}
           onChanged={(value: string) => {
-            this.props.updateProperty("clientState", value);
+            this.props.onUpdateProperty("clientState", value);
           }}
         />
         <DatePicker
@@ -139,14 +141,19 @@ class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
 const mapStateToProps = (state: IState) => ({
   expirationDateTime: state.subscription.expirationDateTime,
   notificationUrl: state.subscription.notificationUrl,
-  error: state.subscription.error,
+  validated: state.subscription.validated,
   loading: state.subscription.loading,
   clientState: state.subscription.clientState,
-  enabled: state.subscription.enabled
+  enabled: state.subscription.enabled,
+  listId: state.subscription.listId
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  updateProperty: (key: string, value: string) => dispatch(updateProperty(key, value))
-})
+const mapDispatchToProps = (dispatch): IAddSubscriptionDispatch => ({
+  onUpdateProperty: (key: string, value: string) => dispatch(onUpdateProperty(key, value)),
+  onAddingSubscription: (value: boolean) => dispatch(onAddingSubscription(value)),
+  onAddSubscription: (listId: string, subscription: IAddSubscription) => dispatch(onAddSubscription(listId, subscription)),
+  onValidated: (value: boolean) => dispatch(onValidated(value)),
+  onCancel: () => dispatch(onCancel())
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddSubscriptionPanel);

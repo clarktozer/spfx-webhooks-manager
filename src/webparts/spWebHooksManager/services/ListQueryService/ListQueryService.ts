@@ -2,7 +2,7 @@ import IListQueryService from "./IListQueryService";
 import { QueryType } from "../../interfaces/QueryType";
 
 export default class ListQueryService implements IListQueryService {
-  generateListFilter(queryType: QueryType, listIds: string[], listTemplateTypes: string[]): string {
+  public generateListFilter(queryType: QueryType, listIds: string[], listTemplateTypes: string[]): string {
     let listFilter = "Hidden eq false";
     if (queryType == QueryType.TEMPLATE) {
       if (listTemplateTypes != null && listTemplateTypes.length > 0) {
@@ -17,7 +17,7 @@ export default class ListQueryService implements IListQueryService {
     return listFilter;
   }
 
-  generateListTemplateFilter(listTemplateTypes: string[]): string {
+  public generateListTemplateFilter(listTemplateTypes: string[]): string {
     let map = listTemplateTypes.map((e) => {
       return `BaseTemplate eq ${SP.ListTemplateType[e]}`;
     });
