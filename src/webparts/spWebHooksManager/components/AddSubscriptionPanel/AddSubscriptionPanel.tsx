@@ -1,32 +1,30 @@
 import * as React from 'react';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DatePicker, DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { autobind } from '@uifabric/utilities/lib';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
-import { IAddSubscriptionProps } from './IAddSubscriptionProps';
-import { IAddSubscriptionState } from './IAddSubscriptionState';
-import { IAddSubscription } from './IAddSubscription';
+import { IAddSubscriptionProps } from './IAddSubscriptionState';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import styles from '../SpWebHooksManager.module.scss';
+import { connect } from 'react-redux';
+import { IState } from '../../store';
+import { updateProperty } from '../../actions/AddSubscription';
 
-export default class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, IAddSubscriptionState> {
+class AddSubscriptionPanel extends React.Component<IAddSubscriptionProps, {}> {
   private minDate: Date;
   private maxDate: Date;
+
   constructor(props: IAddSubscriptionProps) {
     super(props);
+  }
 
+  componentDidMount() {
     let currentDate = new Date();
     this.minDate = this.addDays(currentDate.toISOString(), 1);
     this.maxDate = this.addDays(currentDate.toISOString(), 90);
-
-    this.state = {
-      expirationDateTime: this.minDate,
-      notificationUrl: "",
-      error: true,
-      loading: false
-    };
+    this.props.updateProperty("expirationDateTime", this.minDate);
   }
 
   @autobind
@@ -38,35 +36,22 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
 
   @autobind
   private onCloseEditPanel() {
-    this.props.onClosePanel();
+    this.props.updateProperty("enabled", false);
   }
 
   @autobind
   private async onSave() {
-    let subscription: IAddSubscription = {
-      expirationDateTime: this.state.expirationDateTime,
-      notificationUrl: this.state.notificationUrl,
-      clientState: this.state.clientState
-    };
-    this.setState({
-      loading: true
-    });
-    await this.props.onAdd(subscription);
-    this.setState({
-      loading: false
-    });
-  }
-
-  @autobind
-  private onMaxDate() {
-    this.setState({
-      expirationDateTime: this.maxDate
+    this.props.addingSubscription(true);
+    this.props.addSubscription({
+      expirationDateTime: this.props.expirationDateTime,
+      notificationUrl: this.props.notificationUrl,
+      clientState: this.props.clientState
     });
   }
 
   @autobind
   private onRenderFooterContent() {
-    const { error, loading } = this.state;
+    const { error, loading } = this.props;
 
     return (
       <div>
@@ -84,21 +69,21 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
   }
 
   @autobind
+  private onMaxDate() {
+    this.onSelectDate(this.maxDate);
+  }
+
+  @autobind
   private onSelectDate(date: Date) {
-    this.setState({
-      expirationDateTime: date
-    }, () => {
-      this.onError();
-    });
+    this.props.updateProperty("expirationDateTime", date);
+    this.onError();
   }
 
   @autobind
   private onError() {
-    this.setState({
-      error: this.state.expirationDateTime == null
-        || this.state.notificationUrl == null
-        || this.state.notificationUrl.length == 0
-    });
+    this.props.updateProperty("error", this.props.expirationDateTime == null
+      || this.props.notificationUrl == null
+      || this.props.notificationUrl.length == 0);
   }
 
   @autobind
@@ -111,16 +96,8 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
     this.onError();
   }
 
-  @autobind
-  private onTextFieldChanged(newValue: string, key: string): void {
-    this.setState(() => ({
-      [key]: newValue
-    }));
-  }
-
   public render(): React.ReactElement<IAddSubscriptionProps> {
-    const { expirationDateTime, clientState, notificationUrl } = this.state;
-    const { enabled } = this.props;
+    const { enabled, clientState, notificationUrl, expirationDateTime } = this.props;
 
     return (
       <Panel
@@ -134,13 +111,13 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
           required={true}
           onGetErrorMessage={this._getErrorMessage}
           onNotifyValidationResult={this.NotifyErrorResult}
-          onChanged={(newValue: string) => {
-            this.onTextFieldChanged(newValue, "notificationUrl");
+          onChanged={(value: string) => {
+            this.props.updateProperty("notificationUrl", value);
           }} />
         <TextField label={strings.ClientState}
           value={clientState}
-          onChanged={(newValue: string) => {
-            this.onTextFieldChanged(newValue, "clientState");
+          onChanged={(value: string) => {
+            this.props.updateProperty("clientState", value);
           }}
         />
         <DatePicker
@@ -158,3 +135,18 @@ export default class AddSubscriptionPanel extends React.Component<IAddSubscripti
     );
   }
 }
+
+const mapStateToProps = (state: IState) => ({
+  expirationDateTime: state.subscription.expirationDateTime,
+  notificationUrl: state.subscription.notificationUrl,
+  error: state.subscription.error,
+  loading: state.subscription.loading,
+  clientState: state.subscription.clientState,
+  enabled: state.subscription.enabled
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  updateProperty: (key: string, value: string) => dispatch(updateProperty(key, value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddSubscriptionPanel);

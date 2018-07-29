@@ -12,11 +12,6 @@ import styles from '../SpWebHooksManager.module.scss';
 export default class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscriptionListState> {
   constructor(props: ISubscriptionListProps) {
     super(props);
-
-    this.state = {
-      onExpanded: false,
-      showAddPanel: false
-    };
   }
 
   @autobind
@@ -26,37 +21,37 @@ export default class SubscriptionList extends React.Component<ISubscriptionListP
     });
   }
 
-  @autobind
-  private onEnablePanel() {
-    this.setState({
-      showAddPanel: true
-    });
-  }
+  // @autobind
+  // private onEnablePanel() {
+  //   this.setState({
+  //     showAddPanel: true
+  //   });
+  // }
 
-  @autobind
-  private onClosePanel() {
-    this.setState({
-      showAddPanel: false
-    });
-  }
+  // @autobind
+  // private onClosePanel() {
+  //   this.setState({
+  //     showAddPanel: false
+  //   });
+  // }
 
-  @autobind
-  private async onAdd(subscription: IAddSubscription) {
-    await this.props.onAddSubscription(this.props.listSubscription.list.Id, subscription);
-    this.setState({
-      showAddPanel: false
-    });
-  }
+  // @autobind
+  // private async onAdd(subscription: IAddSubscription) {
+  //   await this.props.onAddSubscription(this.props.listSubscription.list.Id, subscription);
+  //   this.setState({
+  //     showAddPanel: false
+  //   });
+  // }
 
-  @autobind
-  private async onDelete(subscriptionId: string): Promise<void> {
-    await this.props.onDeleteSubscription(this.props.listSubscription.list.Id, subscriptionId);
-  }
+  // @autobind
+  // private async onDelete(subscriptionId: string): Promise<void> {
+  //   await this.props.onDeleteSubscription(this.props.listSubscription.list.Id, subscriptionId);
+  // }
 
-  @autobind
-  private async onUpdate(subscriptionId: string, expirationDate: string): Promise<void> {
-    await this.props.onUpdateSubscription(this.props.listSubscription.list.Id, subscriptionId, expirationDate);
-  }
+  // @autobind
+  // private async onUpdate(subscriptionId: string, expirationDate: string): Promise<void> {
+  //   await this.props.onUpdateSubscription(this.props.listSubscription.list.Id, subscriptionId, expirationDate);
+  // }
 
   public render(): React.ReactElement<ISubscriptionListProps> {
     const { listSubscription } = this.props;

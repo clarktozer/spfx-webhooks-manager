@@ -6,29 +6,24 @@ import {
   IPropertyPaneConfiguration,
   IPropertyPaneDropdownOption,
   PropertyPaneDropdown,
-  IPropertyPaneField,
-  PropertyPaneTextField
+  IPropertyPaneField
 } from '@microsoft/sp-webpart-base';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import SpWebHooksManager from './components/SpWebHooksManager';
-import { ISpWebHooksManagerProps } from './components/ISpWebHooksManagerProps';
 import { sp } from '@pnp/sp';
 import { PropertyFieldMultiSelect } from '@pnp/spfx-property-controls/lib/PropertyFieldMultiSelect';
 import startCase from 'lodash.startcase';
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
 import { ISpWebHooksManagerWebPartProps } from './interfaces/ISpWebHooksManagerWebPartProps';
 import { QueryType } from './interfaces/QueryType';
+import { createStore, IState } from './store';
+import { Store } from 'redux';
+import { Provider } from 'react-redux';
+import { updateProperty, applyProperties } from './actions/subscriptions';
 require('sp-init');
 require('microsoft-ajax');
 require('sp-runtime');
 require('sharepoint');
-
-import { applyProperties, updateProperty } from './reducers/webpart';
-import { createStore, IState } from './store';
-import { Store } from 'redux';
-import { Provider } from 'react-redux';
-import { IReactReduxWebPartProps } from './IReactReduxWebPartProps';
-import { autobind } from '@uifabric/utilities/lib';
 
 export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpWebHooksManagerWebPartProps> {
   private templateTypes: IPropertyPaneDropdownOption[];
@@ -45,23 +40,24 @@ export default class SpWebHooksManagerWebPart extends BaseClientSideWebPart<ISpW
 
     const element = (
       <Provider store={this.store}>
-        <SpWebHooksManager updateWebPartProp={this.updateWebPartProp} />
+        <SpWebHooksManager />
       </Provider>
     );
 
-    ReactDom.render(element, this.domElement);
-  }
+    this.store.subscribe(() => {
+      let state = this.store.getState();
+      let title = state.webpart.title;
+      this.properties["title"] = title;
+    })
 
-  @autobind
-  private updateWebPartProp (key: string, value: string) {
-    this.properties[key] = value;
+    ReactDom.render(element, this.domElement);
   }
 
   protected get disableReactivePropertyChanges() {
     return false;
   }
 
-  protected onPropertyPaneFieldChanged(propertyPath, oldValue, newValue) {
+  protected onPropertyPaneFieldChanged(propertyPath, newValue) {
     if (!this.disableReactivePropertyChanges) {
       this.store.dispatch(updateProperty(propertyPath, newValue));
     }
