@@ -75,8 +75,7 @@ export function editSubscription(state = initialAddState, action: IEditSubscript
       return {
         ...state,
         enabled: false,
-        loading: false,
-        error: action.error
+        loading: false
       };
     default:
       return state;

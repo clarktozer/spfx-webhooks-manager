@@ -1,6 +1,8 @@
 ## spfx-webhooks-manager
 
-SharePoint framework webpart for managing webhooks for a site
+SharePoint framework webpart for managing webhooks for a site.
+
+There is an additional branch (redux) that has the webpart built with redux.
 
 ![Webhooks Manager](./demo.gif)
 

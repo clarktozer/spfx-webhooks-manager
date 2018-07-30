@@ -4,20 +4,16 @@ import { ISubscriptionListItemProps, ISubscriptionListItemDispatch } from './ISu
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import styles from '../SpWebHooksManager.module.scss';
-import { ISubscriptionListItemInternalState } from './ISubscriptionListItemInternalState';
 import { connect } from 'react-redux';
 import { onEditSubscription } from '../../actions/EditSubscription';
 import { IEditPanelOptions } from '../../interfaces/IPanelOptions';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { onDeleteSubscription } from '../../actions/DeleteSubscription';
+import { onDeleteSubscription, onToggleDeleteDialog } from '../../actions/DeleteSubscription';
+import { IState } from '../../store';
 
-class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemInternalState> {
+class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, {}> {
   constructor(props: ISubscriptionListItemProps) {
     super(props);
-
-    this.state = {
-      showDeleteDialog: false
-    };
   }
 
   @autobind
@@ -30,9 +26,7 @@ class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, I
 
   @autobind
   private onToggleDeleteDialog() {
-    this.setState({
-      showDeleteDialog: !this.state.showDeleteDialog
-    });
+    this.props.onToggleDeleteDialog(!this.props.deleteDialogEnabled);
   }
 
   @autobind
@@ -41,8 +35,7 @@ class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, I
   }
 
   public render(): React.ReactElement<ISubscriptionListItemProps> {
-    const { subscription } = this.props;
-    const { showDeleteDialog } = this.state;
+    const { subscription, deleteDialogEnabled } = this.props;
 
     return (
       <div className={styles.subscriptionItem}>
@@ -91,7 +84,8 @@ class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, I
           </li>
         </ul>
         <ConfirmDialog
-          enabled={showDeleteDialog}
+          loading={this.props.deleting}
+          enabled={deleteDialogEnabled}
           onSubmit={this.onDeleteSubscription}
           onClose={this.onToggleDeleteDialog}
           title={strings.DeleteSubscription}
@@ -102,9 +96,15 @@ class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, I
   }
 }
 
+const mapStateToProps = (state: IState) => ({
+  deleting: state.deleteSubscription.deleting,
+  deleteDialogEnabled: state.deleteSubscription.deleteDialogEnabled
+});
+
 const mapDispatchToProps = (dispatch): ISubscriptionListItemDispatch => ({
+  onToggleDeleteDialog: (enabled: boolean) => dispatch(onToggleDeleteDialog(enabled)),
   onEditSubscription: (panelOptions: IEditPanelOptions) => dispatch(onEditSubscription(panelOptions)),
   onDeleteSubscription: (listId: string, subscriptionId: string) => dispatch(onDeleteSubscription(listId, subscriptionId))
 });
 
-export default connect(null, mapDispatchToProps)(SubscriptionListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(SubscriptionListItem);

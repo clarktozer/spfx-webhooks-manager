@@ -6,7 +6,7 @@ export function onDeleteSubscription(listId: string, subscriptionId: string) {
   return async (dispatch) => {
     dispatch(onDeletingSubscription(true));
     let webhookService = new WebhookService();
-
+    debugger;
     try {
       await webhookService.onDeleteWebHook(listId, subscriptionId);
       dispatch(onDeleteSubscriptionSuccess());
@@ -27,7 +27,7 @@ export function onUpdateProperty(propertyName: string, value: any) {
 }
 
 export function onDeletingSubscription(value: boolean) {
-  return onUpdateProperty("loading", value);
+  return onUpdateProperty("deleting", value);
 }
 
 export function onDeleteSubscriptionSuccess() {
@@ -40,5 +40,12 @@ export function onDeleteSubscriptionsError(error: string) {
   return {
     type: SubscriptionActionTypes.SHOW_ERROR_DIALOG,
     error
+  };
+}
+
+export function onToggleDeleteDialog(enabled: boolean) {
+  return {
+    type: DeleteSubscriptionActionTypes.SHOW_DELETE_DIALOG,
+    deleteDialogEnabled: enabled
   };
 }
