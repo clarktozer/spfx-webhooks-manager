@@ -1,4 +1,4 @@
-import { AddSubscriptionActionTypes, SubscriptionActionTypes } from "./ActionTypes";
+import { SubscriptionActionTypes, AddSubscriptionActionTypes } from "./ActionTypes";
 import { IListSubscription } from "../interfaces/IListSubscription";
 import { IWebpartState } from "../components/ISpWebHooksManagerProps";
 
@@ -25,5 +25,10 @@ export interface ISubscriptionErrorAction {
   error: string;
 }
 
-export type ISubscriptionAction = ISubscriptionSuccessAction | ISubscriptionErrorAction;
+export interface IShowErrorDialogAction {
+  type: SubscriptionActionTypes.SHOW_ERROR_DIALOG;
+  error: string;
+}
+
+export type ISubscriptionAction = ISubscriptionSuccessAction | ISubscriptionErrorAction | IShowErrorDialogAction;
 

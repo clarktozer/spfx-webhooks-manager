@@ -79,7 +79,8 @@ const mapStateToProps = (state: IState) => ({
   queryType: state.webpart.queryType,
   displayMode: state.webpart.displayMode,
   listSubscriptions: state.webpart.listSubscriptions,
-  loadingSubscriptions: state.webpart.loadingSubscriptions
+  loadingSubscriptions: state.webpart.loadingSubscriptions,
+  error: state.webpart.error
 });
 
 const mapDispatchToProps = (dispatch) => ({

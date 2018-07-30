@@ -1,5 +1,20 @@
+import { ISubscription } from "../../interfaces/ISubscription";
+
 export interface IEditSubscriptionState {
-  expirationDateTime: Date;
+  subscription: ISubscription;
   loading: boolean;
-  error: boolean;
+  validated: boolean;
+  enabled: boolean;
+}
+
+export interface IEditSubscriptionDispatch {
+  onUpdateProperty: (key: string, value: ISubscription) => void;
+  onEditingSubscription: (value: boolean) => void;
+  onUpdateSubscription: (subscription: ISubscription) => void;
+  onValidated: (value: boolean) => void;
+  onCancel: () => void;
+}
+
+export interface IEditSubscriptionProps extends IEditSubscriptionState, IEditSubscriptionDispatch {
+
 }

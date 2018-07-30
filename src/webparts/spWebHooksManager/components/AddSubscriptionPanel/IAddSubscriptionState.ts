@@ -18,7 +18,6 @@ export interface IAddSubscriptionDispatch {
   onCancel: () => void;
 }
 
-
 export interface IAddSubscriptionProps extends IAddSubscriptionState, IAddSubscriptionDispatch {
 
 }

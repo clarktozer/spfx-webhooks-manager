@@ -1,5 +1,5 @@
 import { IWebpartAction, IWebpartState } from '../components/ISpWebHooksManagerProps';
-import { SubscriptionActionTypes } from '../actions/ActionTypes';
+import { SubscriptionActionTypes, AddSubscriptionActionTypes } from '../actions/ActionTypes';
 
 export const initialState: IWebpartState = {
   title: "",
@@ -35,6 +35,11 @@ export default function subscriptions (state = initialState, action: IWebpartAct
         ...state,
         listSubscriptions: [],
         loadingSubscriptions: false,
+        error: action.error
+      };
+    case SubscriptionActionTypes.SHOW_ERROR_DIALOG:
+      return {
+        ...state,
         error: action.error
       };
     default:

@@ -1,13 +1,13 @@
-import { AddSubscriptionActionTypes } from '../actions/ActionTypes';
+import { AddSubscriptionActionTypes, SubscriptionActionTypes } from '../actions/ActionTypes';
 import { IAddSubscriptionState } from '../components/AddSubscriptionPanel/IAddSubscriptionState';
-import { IAddSubscription } from '../components/AddSubscriptionPanel/IAddSubscription';
-import { IPanelOptions } from '../interfaces/IPanelOptions';
+import { IAddPanelOptions } from '../interfaces/IPanelOptions';
+import { IShowErrorDialogAction } from '../actions/Actions';
 
 export type IAddSubscriptionAction = IUpdateNewPropertyAction
 | IAddSubscriptionSuccessAction
-| IAddSubscriptionErrorAction
 | IShowAddPanelAction
-| IResetAddSubscriptionAction;
+| IResetAddSubscriptionAction
+| IShowErrorDialogAction;
 
 export interface IUpdateNewPropertyAction {
   type: AddSubscriptionActionTypes.UPDATE_NEW_PROPERTY;
@@ -19,14 +19,9 @@ export interface IAddSubscriptionSuccessAction {
   type: AddSubscriptionActionTypes.ADD_SUBSCRIPTION_SUCCESS;
 }
 
-export interface IAddSubscriptionErrorAction {
-  type: AddSubscriptionActionTypes.ADD_SUBSCRIPTION_ERROR;
-  error: string;
-}
-
 export interface IShowAddPanelAction {
   type: AddSubscriptionActionTypes.SHOW_ADD_PANEL;
-  panelOptions: IPanelOptions;
+  panelOptions: IAddPanelOptions;
 }
 
 export interface IResetAddSubscriptionAction {
@@ -51,21 +46,18 @@ export function addSubscription(state = initialAddState, action: IAddSubscriptio
       };
     case AddSubscriptionActionTypes.ADD_SUBSCRIPTION_SUCCESS:
       return {
-        ...state,
-        enabled: false,
-        loading: false
-      };
-    case AddSubscriptionActionTypes.ADD_SUBSCRIPTION_ERROR:
-      return {
-        ...state,
-        enabled: false,
-        loading: false,
-        error: action.error
+        ...initialAddState
       };
     case AddSubscriptionActionTypes.SHOW_ADD_PANEL:
       return {
         ...state,
         ...action.panelOptions
+      };
+    case SubscriptionActionTypes.SHOW_ERROR_DIALOG:
+      return {
+        ...state,
+        enabled: false,
+        loading: false
       };
     case AddSubscriptionActionTypes.RESET_ADD_SUBSCRIPTION:
       return {

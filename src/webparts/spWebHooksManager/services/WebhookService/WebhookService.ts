@@ -6,7 +6,6 @@ import { Subscription } from '@pnp/sp/src/subscriptions';
 import { IODataList } from "@microsoft/sp-odata-types";
 import { QueryType } from "../../interfaces/QueryType";
 import ListQueryService from "../ListQueryService/ListQueryService";
-import { autobind } from "@uifabric/utilities/lib";
 
 export default class WebhookService implements IWebhookService {
   private batchLimit = 50;

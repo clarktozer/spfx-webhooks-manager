@@ -4,26 +4,27 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DatePicker, DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
 import { autobind } from '@uifabric/utilities/lib';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
-import { IEditSubscriptionProps } from './IEditSubscriptionProps';
-import { IEditSubscriptionState } from './IEditSubscriptionState';
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import styles from '../SpWebHooksManager.module.scss';
+import { connect } from 'react-redux';
+import { IState } from '../../store';
+import { IEditSubscriptionProps, IEditSubscriptionDispatch } from './IEditSubscriptionState';
+import { onUpdateProperty, onEditingSubscription, onValidated, onCancel, onUpdateSubscription } from '../../actions/EditSubscription';
+import { ISubscription } from '../../interfaces/ISubscription';
 
-export default class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, IEditSubscriptionState> {
+class EditSubscriptionPanel extends React.Component<IEditSubscriptionProps, {}> {
   private minDate: Date;
   private maxDate: Date;
 
   constructor(props: IEditSubscriptionProps) {
     super(props);
+  }
 
-    this.minDate = new Date(props.subscription.expirationDateTime);
-    this.maxDate = this.addDays(props.subscription.expirationDateTime, 90);
-
-    this.state = {
-      expirationDateTime: this.minDate,
-      loading: false,
-      error: false
-    };
+  public componentWillReceiveProps(nextProps: IEditSubscriptionProps) {
+    if (nextProps.subscription !== this.props.subscription) {
+      this.minDate = new Date(nextProps.subscription.expirationDateTime);
+      this.maxDate = this.addDays(new Date().toISOString(), 90);
+    }
   }
 
   @autobind
@@ -34,29 +35,27 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   }
 
   @autobind
-  private onCloseEditPanel() {
-    this.props.onClosePanel();
-  }
-
-  @autobind
   private async onSave() {
-    this.setState({
-      loading: true
-    });
-    await this.props.onUpdate(this.state.expirationDateTime.toISOString());
-    this.onCloseEditPanel();
+    this.props.onUpdateSubscription(this.props.subscription);
   }
 
   @autobind
   private onMaxDate() {
-    this.setState({
-      expirationDateTime: this.maxDate
+    this.onSelectDate(this.maxDate);
+  }
+
+  @autobind
+  private onSelectDate(date: Date) {
+    this.props.onUpdateProperty("subscription", {
+      ...this.props.subscription,
+      expirationDateTime: date.toISOString()
     });
+    this.onValidated();
   }
 
   @autobind
   private onRenderFooterContent() {
-    const { error, loading } = this.state;
+    const { validated, loading } = this.props;
 
     return (
       <div>
@@ -65,8 +64,8 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
             <Spinner size={SpinnerSize.large} label={strings.UpdatingSubscription} />
             :
             <div className={styles.panelButtons}>
-              <DefaultButton disabled={error} onClick={this.onSave} text={strings.Save} primary={true} />
-              <DefaultButton onClick={this.onCloseEditPanel} text={strings.Cancel}/>
+              <DefaultButton disabled={!validated} onClick={this.onSave} text={strings.Save} primary={true} />
+              <DefaultButton onClick={this.props.onCancel} text={strings.Cancel} />
             </div>
         }
       </div>
@@ -74,30 +73,18 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
   }
 
   @autobind
-  private onSelectDate(date: Date) {
-    this.setState({
-      expirationDateTime: date
-    }, () => {
-      this.onError();
-    });
-  }
-
-  @autobind
-  private onError() {
-    this.setState({
-      error: this.state.expirationDateTime == null && this.state.expirationDateTime > this.maxDate
-    });
+  private onValidated() {
+    this.props.onValidated(this.props.subscription.expirationDateTime != null && new Date(this.props.subscription.expirationDateTime) <= this.maxDate);
   }
 
   public render(): React.ReactElement<IEditSubscriptionProps> {
     const { enabled } = this.props;
-    const { expirationDateTime } = this.state;
 
     return (
       <Panel
         isOpen={enabled}
         type={PanelType.smallFixedFar}
-        onDismiss={this.onCloseEditPanel}
+        onDismiss={this.props.onCancel}
         headerText={strings.EditSubscription}
         onRenderFooterContent={this.onRenderFooterContent}>
         <DatePicker
@@ -108,11 +95,29 @@ export default class EditSubscriptionPanel extends React.Component<IEditSubscrip
           placeholder={strings.SelectDate}
           minDate={this.minDate}
           maxDate={this.maxDate}
+          showGoToToday={false}
           allowTextInput={true}
-          value={expirationDateTime}
+          value={this.minDate}
           onSelectDate={this.onSelectDate} />
         <DefaultButton onClick={this.onMaxDate}>{strings.AddMaxExpiration}</DefaultButton>
       </Panel>
     );
   }
 }
+
+const mapStateToProps = (state: IState) => ({
+  subscription: state.editSubscription.subscription,
+  validated: state.editSubscription.validated,
+  loading: state.editSubscription.loading,
+  enabled: state.editSubscription.enabled,
+});
+
+const mapDispatchToProps = (dispatch): IEditSubscriptionDispatch => ({
+  onUpdateProperty: (key: string, value: ISubscription) => dispatch(onUpdateProperty(key, value)),
+  onEditingSubscription: (value: boolean) => dispatch(onEditingSubscription(value)),
+  onUpdateSubscription: (subscription: ISubscription) => dispatch(onUpdateSubscription(subscription)),
+  onValidated: (value: boolean) => dispatch(onValidated(value)),
+  onCancel: () => dispatch(onCancel())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditSubscriptionPanel);

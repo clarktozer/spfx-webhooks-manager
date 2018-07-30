@@ -1,38 +1,48 @@
 import * as React from 'react';
 import { autobind } from '@uifabric/utilities/lib';
-import { ISubscriptionListItemProps } from './ISubscriptionListItemProps';
-import { ISubscriptionListItemState } from './ISubscriptionListItemState';
-import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPanel';
+import { ISubscriptionListItemProps, ISubscriptionListItemDispatch } from './ISubscriptionListItemProps';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
-import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import * as strings from 'SpWebHooksManagerWebPartStrings';
 import styles from '../SpWebHooksManager.module.scss';
+import { ISubscriptionListItemInternalState } from './ISubscriptionListItemInternalState';
+import { connect } from 'react-redux';
+import { onEditSubscription } from '../../actions/EditSubscription';
+import { IEditPanelOptions } from '../../interfaces/IPanelOptions';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
+import { onDeleteSubscription } from '../../actions/DeleteSubscription';
 
-export default class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, {}> {
+class SubscriptionListItem extends React.Component<ISubscriptionListItemProps, ISubscriptionListItemInternalState> {
   constructor(props: ISubscriptionListItemProps) {
     super(props);
+
+    this.state = {
+      showDeleteDialog: false
+    };
   }
 
-  // @autobind
-  // private async onDelete() {
-  //   await this.props.onDeleteSubscription(this.props.subscription.id);
-  // }
-
-  // @autobind
-  // private async onUpdate(expirationDateTime: string): Promise<void> {
-  //   await this.props.onUpdateSubscription(this.props.subscription.id, expirationDateTime);
-  // }
+  @autobind
+  private onEditSubscription() {
+    this.props.onEditSubscription({
+      enabled: true,
+      subscription: this.props.subscription
+    });
+  }
 
   @autobind
-  private onTogglePanel(key: string) {
-    this.setState(() => ({
-      [key]: !this.state[key]
-    }));
+  private onToggleDeleteDialog() {
+    this.setState({
+      showDeleteDialog: !this.state.showDeleteDialog
+    });
+  }
+
+  @autobind
+  private onDeleteSubscription() {
+    this.props.onDeleteSubscription(this.props.subscription.resource, this.props.subscription.id);
   }
 
   public render(): React.ReactElement<ISubscriptionListItemProps> {
     const { subscription } = this.props;
-    // const { showEditPanel, showDeletePanel } = this.state;
+    const { showDeleteDialog } = this.state;
 
     return (
       <div className={styles.subscriptionItem}>
@@ -42,13 +52,13 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             <FabricIconButton
               stateKey="showEditPanel"
               fabricIconName="Edit"
-              onClick={this.onTogglePanel}
+              onClick={this.onEditSubscription}
               tooltipText={strings.EditSubscription}
             />
             <FabricIconButton
               stateKey="showDeletePanel"
               fabricIconName="ChromeClose"
-              onClick={this.onTogglePanel}
+              onClick={this.onToggleDeleteDialog}
               tooltipText={strings.DeleteSubscription}
             />
           </div>
@@ -80,19 +90,21 @@ export default class SubscriptionListItem extends React.Component<ISubscriptionL
             </div>
           </li>
         </ul>
-        {/* <EditSubscriptionPanel /> */}
-
-        {/* {
-          showDeletePanel ?
-            <ConfirmDialog
-              onSubmit={this.onDelete}
-              onClose={this.closeDeleteDialog}
-              title={strings.DeleteSubscription}
-              message={strings.ConfirmDelete}
-              loadingMessage={strings.DeletingSubscription}/>
-            : null
-        } */}
+        <ConfirmDialog
+          enabled={showDeleteDialog}
+          onSubmit={this.onDeleteSubscription}
+          onClose={this.onToggleDeleteDialog}
+          title={strings.DeleteSubscription}
+          message={strings.ConfirmDelete}
+          loadingMessage={strings.DeletingSubscription} />
       </div>
     );
   }
 }
+
+const mapDispatchToProps = (dispatch): ISubscriptionListItemDispatch => ({
+  onEditSubscription: (panelOptions: IEditPanelOptions) => dispatch(onEditSubscription(panelOptions)),
+  onDeleteSubscription: (listId: string, subscriptionId: string) => dispatch(onDeleteSubscription(listId, subscriptionId))
+});
+
+export default connect(null, mapDispatchToProps)(SubscriptionListItem);

@@ -1,7 +1,8 @@
-import { AddSubscriptionActionTypes } from "./ActionTypes";
+import { AddSubscriptionActionTypes, SubscriptionActionTypes } from "./ActionTypes";
 import { IAddSubscription } from "../components/AddSubscriptionPanel/IAddSubscription";
 import WebhookService from "../services/WebhookService/WebhookService";
-import { IPanelOptions } from "../interfaces/IPanelOptions";
+import { onGetSubscriptions, onGetSubscriptionsError } from "./GetSubscriptions";
+import { IAddPanelOptions } from "../interfaces/IPanelOptions";
 
 export function onUpdateProperty(propertyName: string, value: any) {
   return {
@@ -11,7 +12,7 @@ export function onUpdateProperty(propertyName: string, value: any) {
   };
 }
 
-export function onAddNewSubscription(panelOptions: IPanelOptions) {
+export function onAddNewSubscription(panelOptions: IAddPanelOptions) {
   return {
     type: AddSubscriptionActionTypes.SHOW_ADD_PANEL,
     panelOptions
@@ -22,10 +23,10 @@ export function onAddSubscription(listId: string, subscription: IAddSubscription
   return async (dispatch) => {
     dispatch(onAddingSubscription(true));
     let webhookService = new WebhookService();
-
     try {
       await webhookService.onAddWebHook(listId, subscription);
       dispatch(onAddSubscriptionSuccess());
+      dispatch(onGetSubscriptions());
     }
     catch (e) {
       dispatch(onAddSubscriptionsError(e.data.responseBody["odata.error"].message.value));
@@ -35,7 +36,7 @@ export function onAddSubscription(listId: string, subscription: IAddSubscription
 
 export function onAddSubscriptionsError(error: string) {
   return {
-    type: AddSubscriptionActionTypes.ADD_SUBSCRIPTION_ERROR,
+    type: SubscriptionActionTypes.SHOW_ERROR_DIALOG,
     error
   };
 }

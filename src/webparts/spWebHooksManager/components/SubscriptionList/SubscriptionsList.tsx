@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { autobind } from '@uifabric/utilities/lib';
 import { ISubscriptionListProps } from './ISubscriptionListProps';
-import { ISubscriptionListInternalState } from './ISubscriptionListState';
+import { ISubscriptionListInternalState } from './ISubscriptionListInternalState';
 import SubscriptionListItem from '../SubscriptionListItem/SubscriptionListItem';
 import AddSubscriptionPanel from '../AddSubscriptionPanel/AddSubscriptionPanel';
 import FabricIconButton from '../FabricIconButton/FabricIconButton';
@@ -9,7 +9,8 @@ import * as strings from 'SpWebHooksManagerWebPartStrings';
 import styles from '../SpWebHooksManager.module.scss';
 import { connect } from 'react-redux';
 import { onAddNewSubscription } from '../../actions/NewSubscription';
-import { IPanelOptions } from '../../interfaces/IPanelOptions';
+import { IAddPanelOptions } from '../../interfaces/IPanelOptions';
+import EditSubscriptionPanel from '../EditSubscriptionPanel/EditSubscriptionPanel';
 
 class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscriptionListInternalState> {
   constructor(props: ISubscriptionListProps) {
@@ -72,13 +73,14 @@ class SubscriptionList extends React.Component<ISubscriptionListProps, ISubscrip
             : null
         }
         <AddSubscriptionPanel />
+        <EditSubscriptionPanel />
       </div>
     );
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onAddNewSubscription: (panelOptions: IPanelOptions) => dispatch(onAddNewSubscription(panelOptions))
+  onAddNewSubscription: (panelOptions: IAddPanelOptions) => dispatch(onAddNewSubscription(panelOptions))
 });
 
 export default connect(null, mapDispatchToProps)(SubscriptionList);
