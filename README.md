@@ -1,14 +1,10 @@
-## spfx-webhooks-manager
+## spfx-webhooks-manager **** Needs clean up and refactor
 
 SharePoint framework webpart for managing webhooks for a site
 
 There is an additional branch (redux) that has the webpart built with redux.
 
 ![Webhooks Manager](./demo.gif)
-
-### Status
-
-Needs clean up and refactor
 
 ### Building the code
 
