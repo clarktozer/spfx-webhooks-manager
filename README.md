@@ -1,4 +1,4 @@
-## spfx-webhooks-manager **** Needs clean up and refactor
+## spfx-webhooks-manager
 
 SharePoint framework webpart for managing webhooks for a site
 
